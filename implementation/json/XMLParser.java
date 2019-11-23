@@ -24,20 +24,19 @@ public class XMLParser {
         return false;
     }
 
-    public Pair<Boolean, String> extractName(String element) {
+    public String extractName(String element) {
         pattern = Pattern.compile("(?<=<).+?(?=\\s)");
         matcher = pattern.matcher(element);
         if (matcher.find()) {
             String content = matcher.group();
 
             if (content.endsWith("/")) {
-                return new Pair<>(
-                        true, content.substring(1));
+                return content.substring(0, content.length() - 1);
             } else {
-                return new Pair<>(false, content);
+                return content;
             }
         }
 
-        return new Pair<>(false, "null");
+        return "null";
     }
 }

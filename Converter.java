@@ -1,20 +1,39 @@
 package converter;
 
-import java.util.Scanner;
+import converter.abstraction.controllers.JSONDirector;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 class Converter {
-    private Scanner scanner = new Scanner(System.in);
+    private String content;
+
+    private void parseXML() {
+        JSONDirector director = new JSONDirector(content);
+        director.startConversion();
+    }
+
+    private void parseJSON() {
+
+    }
 
     void start() {
-         JSONBuilder jsonBuilder = new JSONBuilder();
-         XMLBuilder xmlBuilder = new XMLBuilder();
-
-
-         String line = scanner.nextLine().trim();
-         if (line.startsWith("<")) {
-             jsonBuilder.createElement(line);
-         } else {
-             xmlBuilder.createElement(line);
-         }
+        try {
+            Path path = Paths.get("test.txt");
+            content = Files
+                    .readString(path, StandardCharsets.UTF_8)
+                    .trim();
+            if (content.startsWith("<")) {
+                parseXML();
+            } else {
+                parseJSON();
+            }
+        } catch (IOException e) {
+            System.out.println("Error while reading file occurred.");
+            System.out.println(e.getMessage());
+        }
     }
 }
