@@ -4,6 +4,8 @@ import converter.abstraction.data.JSON;
 import converter.implementation.json.JSONBuilder;
 import converter.implementation.json.XMLParser;
 
+import java.util.Map;
+
 public class JSONDirector {
     private JSON json;
     private String content;
@@ -12,9 +14,15 @@ public class JSONDirector {
 
     private void parseElement(String element) {
         if (!parser.checkChildren(element)) {
-            System.out.println(parser.extractName(element));
+            String name = parser.extractName(element);
             String attributes = parser.parseAttributes(element);
-            builder.listOfAttributes(attributes);
+            Map<String, String> mapAttributes =
+                    builder.listOfAttributes(attributes);
+            String content = parser.getContent(element, name);
+
+            json = builder.createElement(name,
+                    content, mapAttributes);
+            System.out.println(json);
         } //TODO add nesting handling
     }
 

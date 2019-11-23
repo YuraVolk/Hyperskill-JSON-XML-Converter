@@ -54,4 +54,16 @@ public class XMLParser {
 
         return "null";
     }
+
+    public String getContent(String element, String name) {
+        String originalPattern = String.format("(?<=>).*(?=</%s>)", name);
+        pattern = Pattern.compile(originalPattern);
+        matcher = pattern.matcher(element);
+
+        if (matcher.find()) {
+            return matcher.group().trim();
+        } else {
+            return "null";
+        }
+    }
 }
