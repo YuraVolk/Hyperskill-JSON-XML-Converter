@@ -13,6 +13,7 @@ public class JSONDirector {
     private void parseElement(String element) {
         if (!parser.checkChildren(element)) {
             System.out.println(parser.extractName(element));
+            System.out.println(parser.parseAttributes(element));
         } //TODO add nesting handling
     }
 

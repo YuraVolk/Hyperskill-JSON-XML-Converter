@@ -1,7 +1,5 @@
 package converter.implementation.json;
 
-import converter.Pair;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -10,6 +8,11 @@ public class XMLParser {
     private Matcher matcher;
 
     public boolean checkChildren(String element) {
+        if (element.replaceAll("\\s", "")
+                    .endsWith("/>")) {
+            return false;
+        }
+
         pattern = Pattern.compile("<.+?>");
         matcher = pattern.matcher(element);
 
@@ -35,6 +38,18 @@ public class XMLParser {
             } else {
                 return content;
             }
+        }
+
+        return "null";
+    }
+
+    public String parseAttributes(String element) {
+        String content = element.replaceFirst("<.+?\\s", "");
+        pattern = Pattern.compile(".+?(?=/>|>)");
+        matcher = pattern.matcher(content);
+
+        if (matcher.find()) {
+            return matcher.group().trim();
         }
 
         return "null";
