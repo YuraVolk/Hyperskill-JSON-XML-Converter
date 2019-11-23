@@ -7,7 +7,14 @@ class Converter {
 
     void start() {
          JSONBuilder jsonBuilder = new JSONBuilder();
-         String line = scanner.nextLine();
-         jsonBuilder.createElement(line);
+         XMLBuilder xmlBuilder = new XMLBuilder();
+
+
+         String line = scanner.nextLine().trim();
+         if (line.startsWith("<")) {
+             jsonBuilder.createElement(line);
+         } else {
+             xmlBuilder.createElement(line);
+         }
     }
 }
