@@ -35,8 +35,12 @@ public class JSON {
             builder.append(value);
             builder.append(",\n");
         });
-        builder.setLength(builder.length() - 2); //remove trailing dot
-        builder.append("\n}\n");
+        builder.append("\"#");
+        builder.append(name);
+        builder.append("\" : \"");
+        builder.append(value);
+        builder.append("\"\n");
+        builder.append("}\n");
         builder.append("}");
         return builder.toString();
     }
