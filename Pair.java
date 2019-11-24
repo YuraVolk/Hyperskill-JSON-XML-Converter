@@ -9,12 +9,22 @@ public class Pair<F, S> {
         this.second = second;
     }
 
+    public Pair() {}
+
     public F getFirst() {
         return first;
     }
 
     public S getSecond() {
         return second;
+    }
+
+    public void setFirst(F first) {
+        this.first = first;
+    }
+
+    public void setSecond(S second) {
+        this.second = second;
     }
 
     @Override  //TESTING ONLY

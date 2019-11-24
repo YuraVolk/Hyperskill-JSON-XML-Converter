@@ -1,6 +1,7 @@
 package converter;
 
 import converter.abstraction.controllers.JSONDirector;
+import converter.abstraction.controllers.XMLDirector;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -17,7 +18,8 @@ class Converter {
     }
 
     private void parseJSON() {
-
+        XMLDirector director = new XMLDirector(content);
+        director.startConversion();
     }
 
     void start() {

@@ -61,7 +61,7 @@ public class XMLParser {
         matcher = pattern.matcher(element);
 
         if (matcher.find()) {
-            return matcher.group().trim();
+            return matcher.group();
         } else {
             return "null";
         }
