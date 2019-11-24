@@ -1,8 +1,11 @@
 package converter.abstraction.controllers;
 
+import converter.Pair;
 import converter.abstraction.data.XML;
 import converter.implementation.xml.JSONParser;
 import converter.implementation.xml.XMLBuilder;
+
+import java.util.Map;
 
 public class XMLDirector {
     private XML xml;
@@ -12,7 +15,13 @@ public class XMLDirector {
 
     private void parseElement(String element) {
         System.out.println(parser.hasChildren(element));
-        System.out.println(parser.extractObject(element));
+        Pair<String, String> response = parser.extractObject(element);
+        Pair<String, Map<String, String>> mapPair = builder
+                .createAttributes(response.getSecond());
+        xml = builder.createElement(mapPair.getFirst(),
+                                response.getFirst(),
+                                mapPair.getSecond());
+        System.out.println(xml);
     }
 
     public XMLDirector(String content) {

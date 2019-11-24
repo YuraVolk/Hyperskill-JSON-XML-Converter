@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.Map;
 
 public class JSON {
-    String name;
-    String value;
-    Map<String, String> attributes;
-    List<JSON> children;
+    private String name;
+    private String value;
+    private Map<String, String> attributes;
+    private List<JSON> children;
 
     public void setName(String name) {
         this.name = name;

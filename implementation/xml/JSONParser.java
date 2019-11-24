@@ -32,7 +32,7 @@ public class JSONParser {
         if (matcher.find()) {
             pair.setFirst(matcher.group()
                     .substring(1, matcher.group().length() - 1));
-        }
+        } //TODO add array element support
 
         return pair;
     }
