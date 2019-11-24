@@ -27,8 +27,9 @@ public class XMLParser {
         return false;
     }
 
+    //Is safe to use on nested elements
     public String extractName(String element) {
-        pattern = Pattern.compile("(?<=<).+?(?=\\s)");
+        pattern = Pattern.compile("(?<=<).+?(?=\\s|/|>)");
         matcher = pattern.matcher(element);
         if (matcher.find()) {
             String content = matcher.group();
