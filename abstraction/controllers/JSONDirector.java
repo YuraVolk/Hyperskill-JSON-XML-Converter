@@ -46,16 +46,17 @@ public class JSONDirector {
             matcher = pattern.matcher(lines[i]);
             if (matcher.lookingAt() && i != 0) {
                 current = lines[i].substring(2, lines[i].length() - 1);
-                previous = lines[i - 1].split(" ")[0].substring(1);
+                previous = parser.extractName(lines[i - 1]);
                 if (current.equals(previous)) {
                     lineList.set(i - 1, lines[i - 1]
                             .substring(0, lines[i - 1].length() - 2));
+
                 }
             }
 
             lineList.add(lines[i] + "\n");
         }
-
+        
         return lineList.toString();
     }
 
