@@ -6,7 +6,7 @@ import java.util.Map;
 public class XML {
     private Map<String, String> attributes;
     private String elementName;
-    private String value = null;
+    private String value;
     private List<XML> children;
 
     public void setAttributes(Map<String, String> attributes) {
@@ -24,9 +24,31 @@ public class XML {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        System.out.println(value);
-        System.out.println(elementName);
-        System.out.println(attributes);
-        return "";
+        builder.append("<");
+        builder.append(elementName);
+        attributes.forEach((key, value) -> {
+            builder.append(" ");
+            builder.append(key);
+            builder.append("=");
+            if (value.startsWith("\"")) {
+                builder.append(value);
+            } else {
+                builder.append("\"");
+                builder.append(value);
+                builder.append("\"");
+            }
+        });
+
+        if (value == null) {
+            builder.append(" />");
+        } else {
+            builder.append(">");
+            builder.append(value);
+            builder.append("</");
+            builder.append(elementName);
+            builder.append(">");
+        }
+
+        return builder.toString();
     }
 }
