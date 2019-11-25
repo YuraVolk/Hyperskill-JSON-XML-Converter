@@ -28,11 +28,14 @@ class Converter {
             content = Files
                     .readString(path, StandardCharsets.UTF_8)
                     .trim();
+            long c = System.currentTimeMillis();
             if (content.startsWith("<")) {
                 parseXML();
             } else {
                 parseJSON();
             }
+            long d = System.currentTimeMillis() - c;
+            System.out.println(d);
         } catch (IOException e) {
             System.out.println("Error while reading file occurred.");
             System.out.println(e.getMessage());

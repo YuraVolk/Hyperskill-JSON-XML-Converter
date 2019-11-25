@@ -67,4 +67,13 @@ public class XMLParser {
             return "null";
         }
     }
+
+    public boolean isParent(String line) {
+        if (line.contains("/>")) {
+            return false;
+        }
+
+        long count = line.chars().filter(ch -> ch == '<').count();
+        return count == 1;
+    }
 }

@@ -38,5 +38,4 @@ public class JSONBuilder {
         json.setAttributes(attributes);
         return json;
     }
-
 }
