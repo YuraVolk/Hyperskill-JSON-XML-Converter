@@ -6,9 +6,9 @@ import converter.implementation.json.XMLParser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Collections;
 
 public class JSONDirector {
     private JSON json;
@@ -17,57 +17,69 @@ public class JSONDirector {
     private XMLParser parser = new XMLParser();
     private Stack<String> executionStack = new Stack<>();
 
-    private void parseElement(List<String> elements) {
-       /* if (!parser.checkChildren(element)) {
-            String name = parser.extractName(element);
-            String attributes = parser.parseAttributes(element);
-            Map<String, String> mapAttributes =
-                    builder.listOfAttributes(attributes);
-            String content = parser.getContent(element, name);
+    private void printContainer(String line, String process) {
+        Map<String, String> attributes;
 
-            json = builder.createElement(name,
-                    content, mapAttributes);
-            System.out.println(json);
+        executionStack.push(process);
+        System.out.println("Element:");
+        System.out.print("path = ");
+        System.out.println(executionStack.toString()
+                .substring(1, executionStack.toString()
+                        .length() - 1));
+
+        attributes = builder.listOfAttributes(parser.parseAttributes(line));
+
+        if (attributes.size() != 0) {
+            System.out.println("attributes:");
+            attributes.forEach((key, value) -> System.out.println(key + " = " + value));
+        }
+    }
+
+    private void printElement(String line, String process) {
+        Map<String, String> attributes;
+
+        System.out.print("Element:\npath = ");
+        executionStack.push(process);
+        System.out.println(executionStack.toString()
+                .substring(1, executionStack.toString()
+                        .length() - 1));
+        executionStack.pop();
+
+        String content = parser.getContent(line,
+                process);
+        if (content != null) {
+            System.out.println("value = \"" + content + "\"");
         } else {
-            System.out.println("nested");
-        }*/
+            System.out.println("value = null");
+        }
 
+        attributes = builder.listOfAttributes(parser.parseAttributes(line));
+        if (attributes.size() != 0) {
+            System.out.println("attributes:");
+            attributes.forEach((key, value) -> System.out.println(key + " = " + value));
+        }
 
-       System.out.println(elements);
+    }
+
+    private void parseElement(List<String> elements) {
        String process;
-       String currentName;
 
        for (int i = 0; i < elements.size(); i++) {
+           process = parser.extractName(elements.get(i));
+
            if (parser.isParent(elements.get(i))) {
-               process = parser.extractName(elements.get(i));
                if (process.startsWith("/")) {
-                   System.out.print("Container end of: " + elements.get(i));
                    executionStack.pop();
+                   continue;
                } else {
-                   System.out.print("Container start of:  " + elements.get(i));
-                   System.out.println("Attributes: " +
-                           builder.listOfAttributes(
-                                   parser.parseAttributes(elements.get(i))
-                           ));
-                   currentName = parser.extractName(elements.get(i));
-                   System.out.println("Name: " + currentName);
-                   executionStack.push(process);
+                   printContainer(elements.get(i), process);
                }
            } else {
-               System.out.print("Parsing element: " + elements.get(i));
-               System.out.println("Attributes: " +
-                       builder.listOfAttributes(
-                               parser.parseAttributes(elements.get(i))
-                       ));
-               currentName = parser.extractName(elements.get(i));
-               System.out.println("Name: " + currentName);
-               System.out.println("Value: " + parser.getContent(elements.get(i),
-                       currentName));
+                printElement(elements.get(i), process);
            }
-           System.out.println("-----------------------------------------------");
-       }
-       System.out.println(executionStack);
 
+           System.out.println();
+       }
     }
 
     private List<String> beautifyContent(String content) {
@@ -77,7 +89,16 @@ public class JSONDirector {
         List<String> lineList = new ArrayList<>();
 
         for (int i = 0; i < lines.length; i++) {
-            lineList.add(lines[i].replaceFirst(" *(?=<)", "") + "\n");
+            lines[i] = lines[i].replaceFirst(" *(?=<)", "") + "\n";
+        }
+
+        for (int i = 0; i < lines.length - 1; i++) {
+
+            if (parser.extractName(lines[i]).equals(
+                    parser.extractName(lines[i+1]))) {
+                lines[i+1] = lines[i+1].substring(0, lines[i+1].length() - 1);
+            }
+            lineList.add(lines[i]);
         }
 
         return lineList;

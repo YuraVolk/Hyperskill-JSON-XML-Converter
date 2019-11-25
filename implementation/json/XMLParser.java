@@ -7,26 +7,6 @@ public class XMLParser {
     private Pattern pattern;
     private Matcher matcher;
 
-    public boolean checkChildren(String element) {
-        if (element.replaceAll("\\s", "")
-                    .endsWith("/>")) {
-            return false;
-        }
-
-        pattern = Pattern.compile("<.+?>");
-        matcher = pattern.matcher(element);
-
-        int count = 0;
-        while (matcher.find()) {
-            count++;
-            if (count > 2) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     //Is safe to use on nested elements
     public String extractName(String element) {
         pattern = Pattern.compile("(?<=<).+?(?=\\s|/|>)");
@@ -64,7 +44,7 @@ public class XMLParser {
         if (matcher.find()) {
             return matcher.group();
         } else {
-            return "null";
+            return null;
         }
     }
 
