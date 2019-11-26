@@ -78,7 +78,7 @@ public class JSONDirector {
                 printElement(elements.get(i), process);
            }
 
-           System.out.println();
+           System.out.println(" ");
        }
     }
 
@@ -86,26 +86,31 @@ public class JSONDirector {
         content = content.replaceAll(">(?![@-~!-;=])", ">\n");
         String[] lines = content.split("\n");
 
-        List<String> lineList = new ArrayList<>();
-
         for (int i = 0; i < lines.length; i++) {
             lines[i] = lines[i].replaceFirst(" *(?=<)", "") + "\n";
         }
 
         for (int i = 0; i < lines.length - 1; i++) {
-
             if (parser.extractName(lines[i]).equals(
-                    parser.extractName(lines[i+1]))) {
-                lines[i+1] = lines[i+1].substring(0, lines[i+1].length() - 1);
+                    lines[i+1].trim().substring(2, lines[i+1].trim().length() - 1))) {
+                lines[i] = lines[i].substring(0, lines[i].length() - 1);
             }
-            lineList.add(lines[i]);
         }
 
-        return lineList;
+        StringBuilder builder = new StringBuilder();
+
+        for (String line : lines) {
+            builder.append(line);
+        }
+
+        List<String> finalList = new ArrayList<>();
+        Collections.addAll(finalList, builder.toString().split("\n"));
+
+        return finalList;
     }
 
     public JSONDirector(String content) {
-        content = content.replaceAll("\\r\\n|\\r|\\n", "");
+        content = content.replaceAll("\\r\\n|\\r|\\n|\\t", "");
         this.content = beautifyContent(content);
     }
 
