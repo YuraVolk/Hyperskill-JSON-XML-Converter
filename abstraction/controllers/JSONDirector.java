@@ -74,7 +74,7 @@ public class JSONDirector {
                } else {
                    printContainer(elements.get(i), process);
                }
-           } else {
+           } else {//\"(?=})|(,|}(?!,))|{(?=\")
                 printElement(elements.get(i), process);
            }
 
