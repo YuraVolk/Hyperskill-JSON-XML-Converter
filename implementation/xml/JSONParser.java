@@ -9,12 +9,6 @@ public class JSONParser {
     private Pattern pattern;
     private Matcher matcher;
 
-    public boolean hasChildren(String element) {
-        return element.length() - element
-                .replace("{", "")
-                .length() > 1;
-    }
-
     public Pair<String, String> extractObject(String element) {
         Pair<String, String> pair = new Pair<>();
         pattern = Pattern.compile("(?<=\\{).+(?=})");
@@ -35,5 +29,15 @@ public class JSONParser {
         } //TODO add array element support
 
         return pair;
+    }
+
+    public String extractName(String element) {
+        pattern = Pattern.compile("(?<=\").+?(?=\")");
+        matcher = pattern.matcher(element);
+
+        if (matcher.find()) {
+            return matcher.group();
+        }
+        return "";
     }
 }
