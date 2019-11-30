@@ -40,4 +40,23 @@ public class JSONParser {
         }
         return "";
     }
+
+    public Pair<String, String> extractAttribute(String element) {
+        String[] attrArray = element.split("\"\\s*:\\s*\"?");
+        Pair<String, String> attr = new Pair<>();
+        attr.setFirst(attrArray[0].substring(1));
+
+        String value = attrArray[1];
+        if (value.endsWith("\",")) {
+            value = value.substring(0, value.length() - 2);
+        } else if (value.endsWith("\"")) {
+            value = value.substring(0, value.length() - 1);
+        }
+
+
+
+        attr.setSecond(value);
+
+        return attr;
+    }
 }

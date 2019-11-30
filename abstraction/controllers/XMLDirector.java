@@ -1,5 +1,6 @@
 package converter.abstraction.controllers;
 
+import converter.Pair;
 import converter.abstraction.data.XML;
 import converter.implementation.xml.JSONParser;
 import converter.implementation.xml.XMLBuilder;
@@ -8,6 +9,26 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
+/**
+ * Element Start ->
+ * 	mark element as container
+ * 	parse all attributes -> {
+ * 		apply correction rules()
+ * 		if (passed) -> {
+ * 			continue
+ *                } else {
+ * 			go back to start of element
+ * 			start parsing as container, ignoring @ and #
+ *        }* 	}
+ * 	if (# symbol found) -> {
+ * 		iscontainer ?> start "Element Start" ?< mark element as container* 	} else {
+ * 		stop parsing. no print* 	}
+ *
+ * 	if (found end and stack pull is element) {
+ * 		continue with next elements* 	}
+ * }
+ */
 public class XMLDirector {
     private XML xml;
     private String content;
@@ -20,12 +41,23 @@ public class XMLDirector {
         String name;
 
         for (String line : lines) {
-            if (line.trim().matches(".+?(\\s*?\\{)")) {
-                name = parser.extractName(line.trim());
+            if (line.matches(".+?(\\s*?\\{)")) {
+                name = parser.extractName(line);
                 System.out.println("Container start of " + name);
+                jsonStructure.add(name);
+                builder.createContainer(jsonStructure, name);
+            } else if (line.matches("},?")){
+                System.out.println("Container end of " + jsonStructure.peek());
+                jsonStructure.pop();
             } else {
-                System.out.println("Parsing element " + line.trim());
+                if (line.matches("\"@.+")) {
+                    System.out.println(line);
+                    System.out.println("Parsing attribute " + parser.extractAttribute(line));
+                } else {
+                    System.out.println("Parsing element " + line);
+                }
             }
+            System.out.println(jsonStructure);
             System.out.println("------------------");
         }
     }
@@ -53,6 +85,9 @@ public class XMLDirector {
         }
 
         List<String> lines = new ArrayList<>(Arrays.asList(json.split("\n")));
+        for (int i = 0; i < lines.size(); i++) {
+            lines.set(i, lines.get(i).trim());
+        }
 
         return lines;
     }
