@@ -53,10 +53,13 @@ public class JSONParser {
             value = value.substring(0, value.length() - 1);
         }
 
-
-
         attr.setSecond(value);
 
         return attr;
+    }
+
+    public String getValue(String element) {
+        String[] values = element.split("\"\\s*:\\s*");
+        return values[1];
     }
 }

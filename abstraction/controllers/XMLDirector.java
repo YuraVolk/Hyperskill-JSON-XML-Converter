@@ -36,6 +36,18 @@ public class XMLDirector {
     private JSONParser parser = new JSONParser();
     private Stack<String> jsonStructure = new Stack<>();
 
+    private void printPath() {
+        for (String string : jsonStructure) {
+            if (!string.startsWith("#")) {
+                System.out.print(string);
+                if (!string.equals(jsonStructure.peek())) {
+                    System.out.print(", ");
+                }
+            }
+        }
+        System.out.println();
+    }
+
     private void parseElement(List<String> lines) {
 
         String name;
@@ -48,18 +60,24 @@ public class XMLDirector {
                 builder.createContainer(jsonStructure, name);
             } else if (line.matches("},?")){
                 System.out.println("Container end of " + jsonStructure.peek());
+                builder.goUp();
                 jsonStructure.pop();
             } else {
                 if (line.matches("\"@.+")) {
-                    System.out.println(line);
-                    System.out.println("Parsing attribute " + parser.extractAttribute(line));
+                    Pair<String, String> pair = parser.extractAttribute(line);
+                    builder.addAttribute(pair.getFirst(), pair.getSecond());
                 } else {
-                    System.out.println("Parsing element " + line);
+                    if (line.matches("\"#.+?\"\\s*?:\\s*?((\".+?\")|(null))")) {
+                        builder.setValue(parser.getValue(line));
+                    } else {
+                        System.out.println("Parsing element " + line);
+                    }
                 }
             }
-            System.out.println(jsonStructure);
+            printPath();
             System.out.println("------------------");
         }
+        builder.print();
     }
 
     public XMLDirector(String content) {

@@ -8,16 +8,22 @@ public class XMLBuilder {
     private JSON json = JSON.root();
 
     public void createContainer(Stack<String> path, String name) {
-     /*   JSON current = json;
+        json.addChild(name);
+    }
 
-        for (String string : path) {
-            if (!string.startsWith("#")) {
-                current = current.containsChild(string);
-            }
-        }
+    public void goUp() {
+        json.goUp();
+    }
 
-        current.addChild(name);
-        json = current;
-        json.print();*/
+    public void print() {
+        json.print();
+    }
+
+    public void addAttribute(String key, String value) {
+        json.addAttribute(key, value);
+    }
+
+    public void setValue(String value) {
+        json.setValue(value);
     }
 }
