@@ -26,4 +26,10 @@ public class XMLBuilder {
     public void setValue(String value) {
         json.setValue(value);
     }
+
+    public void createSingleElement(String name, String value, Stack<String> path) {
+        json.addChild(name);
+        json.setValue(value);
+        json.goUp();
+    }
 }

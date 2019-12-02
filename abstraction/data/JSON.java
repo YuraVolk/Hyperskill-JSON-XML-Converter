@@ -10,12 +10,9 @@ public class JSON {
     private static JSON current;
     private JSON parent;
 
+
     private JSON(String name) {
         this.name = name;
-    }
-
-    public void setName(String name) {
-        current.name = name;
     }
 
     public void setValue(String value) {
@@ -30,6 +27,7 @@ public class JSON {
         current.children.add(new JSON(name));
         current.children.get(current.children.size() - 1).parent = current;
         current = current.children.get(current.children.size() - 1);
+        current.print();
     }
 
     public static JSON root() {
@@ -38,15 +36,37 @@ public class JSON {
         return json;
     }
 
-    public void print() {
-        System.out.println("Element: ");
-        System.out.println("Value: " + value);
-        System.out.println("Name: " + name);
-        System.out.println("Attributes: " + attributes);
-        if (parent != null) {
-            System.out.println("Parent: " + parent.getName());
+    public String printPath() {
+        if (!name.startsWith("#")) {
+            StringBuilder builder = new StringBuilder();
+
+            builder.insert(0,name);
+            if (parent != null) {
+                builder.insert(0, ", ");
+                builder.insert(0, parent.printPath());
+            }
+
+            return builder.toString();
         }
-        System.out.println();
+
+        return parent.printPath();
+    }
+
+    public void print() {
+        if (!name.startsWith("#")) {
+            System.out.println("Element: ");
+            if (children.size() == 0) {
+                System.out.println("value = " + value);
+            }
+            System.out.println("Name: " + name);
+            System.out.println("Attributes: " + attributes);
+            System.out.print("Path: " );
+            System.out.println(printPath());
+          /*  if (parent != null) {
+                System.out.println("Parent: " + parent.getName());
+            }*/
+            System.out.println();
+        }
 
         children.forEach(JSON::print);
     }

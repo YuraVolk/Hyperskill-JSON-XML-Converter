@@ -26,8 +26,7 @@ public class JSONParser {
         if (matcher.find()) {
             pair.setFirst(matcher.group()
                     .substring(1, matcher.group().length() - 1));
-        } //TODO add array element support
-
+        }
         return pair;
     }
 
@@ -49,7 +48,7 @@ public class JSONParser {
         String value = attrArray[1];
         if (value.endsWith("\",")) {
             value = value.substring(0, value.length() - 2);
-        } else if (value.endsWith("\"")) {
+        } else if (value.endsWith("\"") || value.endsWith(",")) {
             value = value.substring(0, value.length() - 1);
         }
 
@@ -61,5 +60,13 @@ public class JSONParser {
     public String getValue(String element) {
         String[] values = element.split("\"\\s*:\\s*");
         return values[1];
+    }
+
+    public String[] getElement(String element) {
+        String[] elem =  element.split("(?<=\")\\s*:\\s*");
+        if (elem[1].matches("\\s*?\\{\\s*?}\\s*,?")) {
+            elem[1] = "\"\"";
+        }
+        return elem;
     }
 }

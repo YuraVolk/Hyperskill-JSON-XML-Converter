@@ -67,10 +67,11 @@ public class XMLDirector {
                     Pair<String, String> pair = parser.extractAttribute(line);
                     builder.addAttribute(pair.getFirst(), pair.getSecond());
                 } else {
-                    if (line.matches("\"#.+?\"\\s*?:\\s*?((\".+?\")|(null))")) {
+                    if (line.matches("\"#.+?\"\\s*?:\\s*?((\".*?\")|(null))")) {
                         builder.setValue(parser.getValue(line));
                     } else {
-                        System.out.println("Parsing element " + line);
+                        String[] elem = parser.getElement(line);
+                        builder.createSingleElement(elem[0], elem[1], jsonStructure);
                     }
                 }
             }
