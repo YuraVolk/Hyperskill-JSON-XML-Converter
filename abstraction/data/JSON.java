@@ -41,7 +41,7 @@ public class JSON {
             StringBuilder builder = new StringBuilder();
 
             builder.insert(0,name);
-            if (parent != null) {
+            if (parent != null && !parent.name.equals("JSON_root")) {
                 builder.insert(0, ", ");
                 builder.insert(0, parent.printPath());
             }
@@ -54,25 +54,24 @@ public class JSON {
 
     public void print() {
         if (!name.startsWith("#")) {
-            System.out.println("Element: ");
+            System.out.println("Element:");
+            System.out.print("path = " );
+            System.out.println(printPath());
             if (children.size() == 0) {
                 System.out.println("value = " + value);
             }
-            System.out.println("Name: " + name);
-            System.out.println("Attributes: " + attributes);
-            System.out.print("Path: " );
-            System.out.println(printPath());
-          /*  if (parent != null) {
-                System.out.println("Parent: " + parent.getName());
-            }*/
-            System.out.println();
+            if (attributes.size() != 0) {
+                System.out.println("attributes:");
+                attributes.forEach((key, value) -> System.out.println(key + " = \"" + value + "\""));
+            }
+            System.out.println(" ");
         }
 
         children.forEach(JSON::print);
     }
 
-    public String getName() {
-        return name;
+    public List<JSON> getChildren() {
+        return children;
     }
 
     public void goUp() {

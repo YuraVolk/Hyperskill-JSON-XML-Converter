@@ -67,6 +67,15 @@ public class JSONParser {
         if (elem[1].matches("\\s*?\\{\\s*?}\\s*,?")) {
             elem[1] = "\"\"";
         }
+
+        if (elem[0].startsWith("\"")) {
+            elem[0] = elem[0].substring(1, elem[0].length() - 1);
+        }
+
+        if (!elem[1].startsWith("\"")) {
+            elem[1] = "\"" + elem[1] + "\"";
+        }
+
         return elem;
     }
 }

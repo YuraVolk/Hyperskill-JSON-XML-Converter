@@ -16,10 +16,18 @@ public class XMLBuilder {
     }
 
     public void print() {
-        json.print();
+        json.getChildren().forEach(JSON::print);
     }
 
     public void addAttribute(String key, String value) {
+        if (value.equals("null")) {
+            value = "";
+        }
+
+        if (key.startsWith("@")) {
+            key = key.substring(1);
+        }
+
         json.addAttribute(key, value);
     }
 
