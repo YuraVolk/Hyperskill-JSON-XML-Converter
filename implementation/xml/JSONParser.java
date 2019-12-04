@@ -48,7 +48,9 @@ public class JSONParser {
         String value = attrArray[1];
         if (value.endsWith("\",")) {
             value = value.substring(0, value.length() - 2);
-        } else if (value.endsWith("\"") || value.endsWith(",")) {
+        } else if (value.endsWith("\"")) {
+            value = value.substring(0, value.length() - 1);
+        } else if (value.endsWith(",")) {
             value = value.substring(0, value.length() - 1);
         }
 

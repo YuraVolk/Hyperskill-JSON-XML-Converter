@@ -10,25 +10,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-/**
- * Element Start ->
- * 	mark element as container
- * 	parse all attributes -> {
- * 		apply correction rules()
- * 		if (passed) -> {
- * 			continue
- *                } else {
- * 			go back to start of element
- * 			start parsing as container, ignoring @ and #
- *        }* 	}
- * 	if (# symbol found) -> {
- * 		iscontainer ?> start "Element Start" ?< mark element as container* 	} else {
- * 		stop parsing. no print* 	}
- *
- * 	if (found end and stack pull is element) {
- * 		continue with next elements* 	}
- * }
- */
 public class XMLDirector {
     private XML xml;
     private String content;
@@ -55,11 +36,9 @@ public class XMLDirector {
         for (String line : lines) {
             if (line.matches(".+?(\\s*?\\{)")) {
                 name = parser.extractName(line);
-                System.out.println("Container start of " + name);
                 jsonStructure.add(name);
                 builder.createContainer(jsonStructure, name);
             } else if (line.matches("},?")){
-                System.out.println("Container end of " + jsonStructure.peek());
                 builder.goUp();
                 jsonStructure.pop();
             } else {
@@ -68,15 +47,22 @@ public class XMLDirector {
                     builder.addAttribute(pair.getFirst(), pair.getSecond());
                 } else {
                     if (line.matches("\"#.+?\"\\s*?:\\s*?((\".*?\")|(null))")) {
-                        builder.setValue(parser.getValue(line));
+                        if (jsonStructure.peek().equals(parser.extractName(line).substring(1))) {
+                            builder.setValue(parser.getValue(line));
+                        } else {
+                            builder.createSingleElement(
+                                    parser.extractName(line).substring(1),
+                                    parser.getValue(line),
+                                    jsonStructure);
+                            builder.stripAttributes();
+                        }
+
                     } else {
                         String[] elem = parser.getElement(line);
                         builder.createSingleElement(elem[0], elem[1], jsonStructure);
                     }
                 }
             }
-            printPath();
-            System.out.println("------------------");
         }
         builder.print();
     }

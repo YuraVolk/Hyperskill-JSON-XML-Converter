@@ -16,6 +16,7 @@ public class XMLBuilder {
     }
 
     public void print() {
+        System.out.println("--------------PRINT------------------------");
         json.getChildren().forEach(JSON::print);
     }
 
@@ -39,5 +40,9 @@ public class XMLBuilder {
         json.addChild(name);
         json.setValue(value);
         json.goUp();
+    }
+
+    public void stripAttributes() {
+        json.stripAttributes();
     }
 }
