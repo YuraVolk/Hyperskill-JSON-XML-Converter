@@ -29,7 +29,12 @@ public class XMLBuilder {
             key = key.substring(1);
         }
 
-        json.addAttribute(key, value);
+        if (key.length() == 0) {
+            System.out.println(json.getName());
+            json.stripAttributes();
+        } else {
+            json.addAttribute(key, value);
+        }
     }
 
     public void setValue(String value) {
@@ -37,9 +42,13 @@ public class XMLBuilder {
     }
 
     public void createSingleElement(String name, String value, Stack<String> path) {
-        json.addChild(name);
-        json.setValue(value);
-        json.goUp();
+        if (name.length() == 0 || name.equals("#"))  {
+            json.stripAttributes();
+        } else {
+            json.addChild(name);
+            json.setValue(value);
+            json.goUp();
+        }
     }
 
     public void stripAttributes() {

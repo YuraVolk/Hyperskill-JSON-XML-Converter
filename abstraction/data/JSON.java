@@ -17,7 +17,13 @@ public class JSON {
     }
 
     public void setValue(String value) {
-        current.value = value;
+        if (current.isInvalid) {
+            current.addChild(current.name);
+            current.setValue(value);
+            current.goUp();
+        } else {
+            current.value = value;
+        }
     }
 
     public void addAttribute(String key, String value) {
@@ -32,6 +38,10 @@ public class JSON {
         current.children.add(new JSON(name));
         current.children.get(current.children.size() - 1).parent = current;
         current = current.children.get(current.children.size() - 1);
+    }
+
+    public String getName() {
+        return current.name;
     }
 
     public void stripAttributes() {
@@ -60,7 +70,7 @@ public class JSON {
     }
 
     public String printPath() {
-        if (!name.startsWith("#")) {
+
             StringBuilder builder = new StringBuilder();
 
             builder.insert(0,name);
@@ -70,19 +80,23 @@ public class JSON {
             }
 
             return builder.toString();
-        }
 
-        return parent.printPath();
+
+     //   return parent.printPath();
     }
 
     public void print() {
         if (name.length() != 0) {
-            if (!name.startsWith("#")) {
+           // if (!name.startsWith("#") && isInvalid == false) {
                 System.out.println("Element:");
                 System.out.print("path = " );
                 System.out.println(printPath());
                 if (children.size() == 0) {
-                    System.out.println("value = " + value);
+                    if (isInvalid && children.size() == 0 && value == null) {
+                        System.out.println("value = \"\"");
+                    } else {
+                        System.out.println("value = " + value);
+                    }
                 }
                 if (attributes.size() != 0) {
                     System.out.println("attributes:");
@@ -90,7 +104,7 @@ public class JSON {
                 }
                 System.out.println("invalid = " + isInvalid);
                 System.out.println(" ");
-            }
+          //  }
 
             children.forEach(JSON::print);
         }
@@ -101,7 +115,10 @@ public class JSON {
     }
 
     public void goUp() {
-        if (current.value == null && children.size() != 0) {
+        System.out.println("******************");
+        System.out.println(current.value);
+        System.out.println(current.value);
+        if (current.value == null && children.size() == 0 && attributes.size() != 0) {
             current.isInvalid = true;
         }
 
