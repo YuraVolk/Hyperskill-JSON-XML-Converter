@@ -3,6 +3,7 @@ package converter.implementation.xml;
 import converter.abstraction.data.JSON;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 public class XMLBuilder {
     private JSON json = JSON.root();
@@ -42,6 +43,10 @@ public class XMLBuilder {
     }
 
     public void createSingleElement(String name, String value, Stack<String> path) {
+        if (name.equals(path.peek())) {
+            Logger.getAnonymousLogger().config("CXASFD");
+        }
+
         if (name.length() == 0 || name.equals("#"))  {
             json.stripAttributes();
         } else {

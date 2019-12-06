@@ -1,6 +1,9 @@
 package converter.abstraction.data;
 
+import converter.Pair;
+
 import java.util.*;
+import java.util.logging.Logger;
 
 public class JSON {
     private String name;
@@ -27,17 +30,31 @@ public class JSON {
     }
 
     public void addAttribute(String key, String value) {
-        current.attributes.put(key, value);
+        if (value.endsWith(",")) {
+            current.attributes.put(key, value.substring(value.length() - 1));
+        } else {
+            current.attributes.put(key, value);
+        }
     }
 
     public void addChild(String name) {
-        if (name.endsWith(",")) {
-            name = name.substring(0, name.length() - 1);
+        boolean valid = false;
+
+        if (name.startsWith("@")) {
+            current.isInvalid = true;
+            valid = true;
         }
 
         current.children.add(new JSON(name));
         current.children.get(current.children.size() - 1).parent = current;
         current = current.children.get(current.children.size() - 1);
+        if (valid) {
+            current.isInvalid = true;
+        }
+    }
+
+    public String getValue() {
+        return current.value;
     }
 
     public String getName() {
@@ -70,41 +87,58 @@ public class JSON {
     }
 
     public String printPath() {
-
+            if (!isInvalid && name.startsWith("#")) {
+                return parent.printPath();
+            }
             StringBuilder builder = new StringBuilder();
 
-            builder.insert(0,name);
+            if (isInvalid && name.startsWith("@") || name.startsWith("#")) {
+                builder.insert(0,name.substring(1));
+            } else {
+                builder.insert(0,name);
+            }
+
+
             if (parent != null && !parent.name.equals("JSON_root")) {
                 builder.insert(0, ", ");
                 builder.insert(0, parent.printPath());
             }
 
             return builder.toString();
-
-
-     //   return parent.printPath();
     }
 
     public void print() {
         if (name.length() != 0) {
-           // if (!name.startsWith("#") && isInvalid == false) {
+        //    if (!name.startsWith("#") && isInvalid == false) {
                 System.out.println("Element:");
                 System.out.print("path = " );
                 System.out.println(printPath());
                 if (children.size() == 0) {
-                    if (isInvalid && children.size() == 0 && value == null) {
+                    if ((isInvalid && value == null) || value.equals("\"")) {
                         System.out.println("value = \"\"");
                     } else {
-                        System.out.println("value = " + value);
+                        if (value.endsWith("\",")) {
+                            value = value.substring(0, value.length() - 2);
+                        } else if (value.endsWith(",")) {
+                            value = value.substring(0, value.length() - 1);
+                        }
+
+                        if (value.endsWith("\"") || value.equals("null")) {
+                            System.out.println("value = " + value);
+                        } else {
+                            System.out.println("value = \"" + value + "\"");
+                        }
+                        // Logger.getLogger( JSON.class.getName()).info(value);
+
                     }
                 }
                 if (attributes.size() != 0) {
                     System.out.println("attributes:");
                     attributes.forEach((key, value) -> System.out.println(key + " = \"" + value + "\""));
                 }
-                System.out.println("invalid = " + isInvalid);
+               // System.out.println("invalid = " + isInvalid);
                 System.out.println(" ");
-          //  }
+         //   }
 
             children.forEach(JSON::print);
         }
@@ -115,10 +149,8 @@ public class JSON {
     }
 
     public void goUp() {
-        System.out.println("******************");
-        System.out.println(current.value);
-        System.out.println(current.value);
-        if (current.value == null && children.size() == 0 && attributes.size() != 0) {
+
+        if (current.value == null && current.children.size() == 0) {
             current.isInvalid = true;
         }
 

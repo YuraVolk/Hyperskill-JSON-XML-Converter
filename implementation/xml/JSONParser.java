@@ -2,12 +2,16 @@ package converter.implementation.xml;
 
 import converter.Pair;
 
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class JSONParser {
     private Pattern pattern;
     private Matcher matcher;
+    private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
     public Pair<String, String> extractObject(String element) {
         Pair<String, String> pair = new Pair<>();
@@ -45,13 +49,17 @@ public class JSONParser {
         Pair<String, String> attr = new Pair<>();
         attr.setFirst(attrArray[0].substring(1));
 
+
         String value = attrArray[1];
         if (value.endsWith("\",")) {
             value = value.substring(0, value.length() - 2);
+
         } else if (value.endsWith("\"")) {
             value = value.substring(0, value.length() - 1);
+
         } else if (value.endsWith(",")) {
             value = value.substring(0, value.length() - 1);
+
         }
 
         attr.setSecond(value);
@@ -77,6 +85,21 @@ public class JSONParser {
         if (!elem[1].startsWith("\"")) {
             elem[1] = "\"" + elem[1] + "\"";
         }
+
+        if (elem[1].startsWith("\"")) {
+            elem[1] = elem[1].substring(1);
+        }
+
+        if (elem[1].endsWith(",\"")) {
+            elem[1] = elem[1].substring(0, elem[1].length() - 1);
+        }
+
+        if (elem[1].endsWith("\"")) {
+            elem[1] = elem[1].substring(0, elem[1].length() - 1);
+        }
+
+
+
 
         return elem;
     }

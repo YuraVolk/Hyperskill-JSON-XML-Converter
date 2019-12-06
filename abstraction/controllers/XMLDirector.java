@@ -46,7 +46,7 @@ public class XMLDirector {
                     Pair<String, String> pair = parser.extractAttribute(line);
                     builder.addAttribute(pair.getFirst(), pair.getSecond());
                 } else {
-                    if (line.matches("\"#.+?\"\\s*?:\\s*?((\".*?\")|(null))")) {
+                    if (line.matches("\"#.+?\"\\s*?:\\s*?((\".*?\")|(null)),?")) {
                         if (jsonStructure.peek().equals(parser.extractName(line).substring(1))) {
                             builder.setValue(parser.getValue(line));
                         } else {
