@@ -30,6 +30,7 @@ public class JSON {
     }
 
     public void addAttribute(String key, String value) {
+
         if (value.endsWith(",")) {
             current.attributes.put(key, value.substring(value.length() - 1));
         } else {
@@ -38,17 +39,28 @@ public class JSON {
     }
 
     public void addChild(String name) {
-        boolean valid = false;
+        boolean isValid = true;
+
+        if (name.length() >= 1) {
+            if (current.name.equals(name.substring(1)) && name.startsWith("#") && current.isInvalid) {
+                isValid = false;
+            }
+        }
+
+
+        if (current.value != null) {
+            current.isInvalid = true;
+        }
 
         if (name.startsWith("@")) {
             current.isInvalid = true;
-            valid = true;
         }
 
         current.children.add(new JSON(name));
         current.children.get(current.children.size() - 1).parent = current;
         current = current.children.get(current.children.size() - 1);
-        if (valid) {
+
+        if (!isValid) {
             current.isInvalid = true;
         }
     }
@@ -70,9 +82,11 @@ public class JSON {
             goUp();
         });
 
-        if (value != null) {
-            addChild(name);
-            setValue(value);
+        if (current.value != null) {
+            String val = current.value;
+
+            addChild(current.name);
+            setValue(val);
             goUp();
         }
 
@@ -86,30 +100,37 @@ public class JSON {
         return json;
     }
 
-    public String printPath() {
-            if (!isInvalid && name.startsWith("#")) {
-                return parent.printPath();
+    private String printPath() {
+            if (!name.startsWith("#") || isInvalid) {
+                StringBuilder builder = new StringBuilder();
+
+                if (name.startsWith("@")) {
+                    isInvalid = true;
+                }
+
+                if (isInvalid && name.startsWith("@") || name.startsWith("#")) {
+                    builder.insert(0, name.substring(1));
+                } else {
+                    builder.insert(0,name);
+                }
+
+
+                if (parent != null && !parent.name.equals("JSON_root")) {
+                    builder.insert(0, ", ");
+                    builder.insert(0, parent.printPath());
+                }
+
+                return builder.toString();
             }
-            StringBuilder builder = new StringBuilder();
 
-            if (isInvalid && name.startsWith("@") || name.startsWith("#")) {
-                builder.insert(0,name.substring(1));
-            } else {
-                builder.insert(0,name);
-            }
+            return parent.printPath();
 
 
-            if (parent != null && !parent.name.equals("JSON_root")) {
-                builder.insert(0, ", ");
-                builder.insert(0, parent.printPath());
-            }
-
-            return builder.toString();
     }
 
     public void print() {
         if (name.length() != 0) {
-        //    if (!name.startsWith("#") && isInvalid == false) {
+            if (!name.startsWith("#") || isInvalid) {
                 System.out.println("Element:");
                 System.out.print("path = " );
                 System.out.println(printPath());
@@ -117,6 +138,10 @@ public class JSON {
                     if ((isInvalid && value == null) || value.equals("\"")) {
                         System.out.println("value = \"\"");
                     } else {
+                        if (value.startsWith("\"") && !value.endsWith("\"")) {
+                            value = value.substring(1);
+                        }
+
                         if (value.endsWith("\",")) {
                             value = value.substring(0, value.length() - 2);
                         } else if (value.endsWith(",")) {
@@ -134,11 +159,17 @@ public class JSON {
                 }
                 if (attributes.size() != 0) {
                     System.out.println("attributes:");
-                    attributes.forEach((key, value) -> System.out.println(key + " = \"" + value + "\""));
+                    attributes.forEach((key, value) -> {
+                        if (key.startsWith("@")) {
+                            System.out.println(key.substring(1) + " = \"" + value + "\"");
+                        } else {
+                            System.out.println(key + " = \"" + value + "\"");
+                        }
+                    });
                 }
-               // System.out.println("invalid = " + isInvalid);
+                //System.out.println("invalid = " + isInvalid);
                 System.out.println(" ");
-         //   }
+            }
 
             children.forEach(JSON::print);
         }
@@ -149,13 +180,29 @@ public class JSON {
     }
 
     public void goUp() {
-
         if (current.value == null && current.children.size() == 0) {
             current.isInvalid = true;
         }
 
         if (current.isInvalid) {
             stripAttributes();
+            if (current.name.equals("inner12")) {
+                Iterator<JSON> iterator = current.children.iterator();
+                while (iterator.hasNext())  {
+                    JSON child = iterator.next();
+                    if (child.name.startsWith("@")) {
+                        if (current.children.
+                                stream()
+                                .anyMatch(o -> o.name
+                                        .equals(child.name
+                                                .substring(1)))) {
+                            iterator.remove();
+                        }
+
+                    }
+                }
+            }
+
         }
 
         if (current.parent != null) {

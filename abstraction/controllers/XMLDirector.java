@@ -58,7 +58,6 @@ public class XMLDirector {
                         }
 
                     } else {
-                        System.out.println(line);
                         String[] elem = parser.getElement(line);
                         builder.createSingleElement(elem[0], elem[1], jsonStructure);
                     }

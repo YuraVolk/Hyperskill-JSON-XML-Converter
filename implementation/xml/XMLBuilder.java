@@ -26,12 +26,11 @@ public class XMLBuilder {
             value = "";
         }
 
-        if (key.startsWith("@")) {
+     /*   if (key.startsWith("@")) {
             key = key.substring(1);
-        }
+        }*/
 
-        if (key.length() == 0) {
-            System.out.println(json.getName());
+        if (key.length() == 0 || key.equals("@")) {
             json.stripAttributes();
         } else {
             json.addAttribute(key, value);
@@ -43,9 +42,9 @@ public class XMLBuilder {
     }
 
     public void createSingleElement(String name, String value, Stack<String> path) {
-        if (name.equals(path.peek())) {
+      /*  if (name.equals(path.peek())) {
             Logger.getAnonymousLogger().config("CXASFD");
-        }
+        }*/
 
         if (name.length() == 0 || name.equals("#"))  {
             json.stripAttributes();
