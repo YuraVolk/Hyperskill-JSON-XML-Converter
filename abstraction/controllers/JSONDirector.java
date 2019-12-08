@@ -94,7 +94,30 @@ public class JSONDirector {
 
        xml.getChildren().forEach(XML::generate);
        List<PseudoElement> requests = XML.getRequests();
-       System.out.println(requests);
+       executionStack.clear();
+
+       builder.start();
+       for (PseudoElement request : requests) {
+            if (request.isGoUp()) {
+                builder.createEnd(false, executionStack.size());
+                executionStack.pop();
+            } else if (request.isParent()) {
+                builder.createContainer(request.getName(),
+                        request.hasContainers(),
+                        request.getAttributes(),
+                        executionStack.size());
+                executionStack.push(request.getName());
+            } else {
+                builder.createSingleElement(request.getName(),
+                                            request.getValue(),
+                                            request.getAttributes(),
+                                            false,
+                                            executionStack.size());
+            }
+       }
+       builder.end();
+
+       builder.printResults();
     }
 
     private List<String> beautifyContent(String content) {

@@ -62,15 +62,6 @@ public class XML {
     }
 
     public void generate() {
-        System.out.println("XML{\n" +
-                "attributes=" + attributes +
-                ",\n elementName='" + elementName + '\'' +
-                ",\n value='" + value + '\'' +
-                ",\n parent=" + parent +
-                ",\n children=" + children +
-                ",\n containsContainer=" + containsContainer +
-                "\n}\n\n");
-
         if (children.size() > 0) {
             structure.add(PseudoElement.container(elementName, attributes, containsContainer));
             children.forEach(XML::generate);

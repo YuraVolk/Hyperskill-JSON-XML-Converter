@@ -58,6 +58,10 @@ public class PseudoElement {
         return goUp;
     }
 
+    public boolean hasContainers() {
+        return hasContainers;
+    }
+
     @Override
     public String toString() {
         return "PseudoElement{\n" +
