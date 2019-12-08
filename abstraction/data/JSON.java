@@ -1,5 +1,8 @@
 package converter.abstraction.data;
 
+import converter.PseudoElement;
+import converter.implementation.xml.XMLBuilder;
+
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -13,6 +16,7 @@ public class JSON {
     private boolean isInvalid = false;
     private boolean stripped = false;
     private Set<String> additionHistory = new LinkedHashSet<>();
+    private static List<PseudoElement> requests = new ArrayList<>();
 
     private JSON(String name) {
         this.name = name;
@@ -126,7 +130,7 @@ public class JSON {
                 }
 
 
-                if (parent != null && !parent.name.equals("JSON_root")) {
+                if (parent != null) {
                     builder.insert(0, ", ");
                     builder.insert(0, parent.printPath());
                 }
@@ -140,7 +144,13 @@ public class JSON {
     }
 
     public void print() {
+        String curVal = value;
+        Map<String, String > curAttr = new LinkedHashMap<>();
+
         if (name.length() != 0) {
+            if (name.startsWith("#") || name.startsWith("@")) {
+                name = name.substring(1);
+            }
             if (!name.startsWith("#") || isInvalid) {
                 System.out.println("Element:");
                 System.out.print("path = " );
@@ -148,6 +158,7 @@ public class JSON {
                 if (children.size() == 0) {
                     if ((isInvalid && value == null) || value.equals("\"")) {
                         System.out.println("value = \"\"");
+                        curVal = "";
                     } else {
                         if (value.startsWith("\"") && !value.endsWith("\"")) {
                             value = value.substring(1);
@@ -164,8 +175,13 @@ public class JSON {
                         } else {
                             System.out.println("value = \"" + value + "\"");
                         }
-                        // Logger.getLogger( JSON.class.getName()).info(value);
 
+                        if (value.endsWith("\"")) {
+                            value = value.substring(1, value.length() - 1);
+                        }
+
+                        curVal = value;
+                        // Logger.getLogger( JSON.class.getName()).info(value);
                     }
                 }
                 if (attributes.size() != 0) {
@@ -173,16 +189,30 @@ public class JSON {
                     attributes.forEach((key, value) -> {
                         if (key.startsWith("@")) {
                             System.out.println(key.substring(1) + " = \"" + value + "\"");
+                            curAttr.put(key.substring(1), value);
                         } else {
                             System.out.println(key + " = \"" + value + "\"");
+                            curAttr.put(key, value);
                         }
                     });
+
+
                 }
                 //System.out.println("invalid = " + isInvalid);
                 System.out.println(" ");
             }
 
-            children.forEach(JSON::print);
+            if (children.size() != 0) {
+                requests.add(PseudoElement.container(name, curAttr));
+                children.forEach(JSON::print);
+                System.out.println("*******************************************");
+                System.out.println("End of container " + name);
+                requests.add(PseudoElement.goUpRequest());
+                System.out.println("*******************************************");
+            } else {
+                requests.add(PseudoElement.element(name, curVal, curAttr));
+            }
+
         }
     }
 
@@ -233,5 +263,9 @@ public class JSON {
         if (current.parent != null) {
             current = current.parent;
         }
+    }
+
+    public static List<PseudoElement> getRequests() {
+        return requests;
     }
 }

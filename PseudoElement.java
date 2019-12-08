@@ -1,31 +1,68 @@
 package converter;
 
-import java.util.List;
 import java.util.Map;
 
 public class PseudoElement {
     private boolean isParent;
     private Map<String, String> attributes;
-    private List<String> path;
+    private String name;
     private String value;
+    private boolean goUp = false;
 
-    public void setValue(String value) {
-        this.value = value;
+    public static PseudoElement goUpRequest() {
+        PseudoElement element = new PseudoElement();
+        element.goUp = true;
+        return element;
     }
 
-    public void setAttributes(Map<String, String> attributes) {
-        this.attributes = attributes;
+    public static PseudoElement container(String name,
+                                          Map<String, String> attributes) {
+        PseudoElement element = new PseudoElement();
+        element.name = name;
+        element.attributes = attributes;
+        element.isParent = true;
+        return element;
     }
 
-    public void setParent(boolean parent) {
-        isParent = parent;
+    public static PseudoElement element(String name, String value,
+                                        Map<String, String> attributes) {
+        PseudoElement element = new PseudoElement();
+        element.name = name;
+        element.value = value;
+        element.attributes = attributes;
+        element.isParent = false;
+        return element;
     }
 
-    public void setPath(List<String> path) {
-        this.path = path;
+    public String getValue() {
+        return value;
     }
 
-    public void print() {
+    public String getName() {
+        return name;
+    }
 
+    public Map<String, String> getAttributes() {
+        return attributes;
+    }
+
+
+    public boolean isParent() {
+        return isParent;
+    }
+
+    public boolean isGoUp() {
+        return goUp;
+    }
+
+    @Override
+    public String toString() {
+        return "PseudoElement{\n" +
+                "isParent=" + isParent +
+                ",\n attributes=" + attributes +
+                ",\n name=" + name  +
+                ",\n value=" + value +
+                ",\n goUp=" + goUp +
+                "\n}\n\n";
     }
 }

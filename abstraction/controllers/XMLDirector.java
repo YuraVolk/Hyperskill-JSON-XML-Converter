@@ -1,6 +1,7 @@
 package converter.abstraction.controllers;
 
 import converter.Pair;
+import converter.PseudoElement;
 import converter.abstraction.data.XML;
 import converter.implementation.xml.JSONParser;
 import converter.implementation.xml.XMLBuilder;
@@ -13,7 +14,7 @@ import java.util.regex.Pattern;
 public class XMLDirector {
     private XML xml;
     private String content;
-    private XMLBuilder builder = new XMLBuilder();
+    private XMLBuilder builder = new XMLBuilder(true);
     private JSONParser parser = new JSONParser();
     private Stack<String> jsonStructure = new Stack<>();
 
@@ -64,7 +65,29 @@ public class XMLDirector {
                 }
             }
         }
+
         builder.print();
+
+        List<PseudoElement> requests = builder.result();
+        jsonStructure.clear();
+        builder = new XMLBuilder(false);
+
+        for (PseudoElement request : requests) {
+            if (request.isGoUp()) {
+                builder.createEnd(jsonStructure.peek(), jsonStructure.size());
+                jsonStructure.pop();
+            } else if (request.isParent()) {
+                builder.addContainer(request.getName(), request.getAttributes(),
+                                                jsonStructure.size());
+                jsonStructure.push(request.getName());
+            } else {
+                builder.createSingleElement(request.getName(),
+                        request.getValue(), request.getAttributes(),
+                                            jsonStructure.size());
+            }
+        }
+
+        builder.getResult();
     }
 
     public XMLDirector(String content) {
