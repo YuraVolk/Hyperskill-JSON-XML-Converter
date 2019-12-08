@@ -2,10 +2,8 @@ package converter.implementation.xml;
 
 import converter.PseudoElement;
 import converter.abstraction.data.JSON;
-import converter.abstraction.data.XML;
 
 import java.util.*;
-import java.util.logging.Logger;
 
 public class XMLBuilder {
     private StringBuilder xmlBuilder = new StringBuilder();
@@ -68,14 +66,15 @@ public class XMLBuilder {
 
     public void addContainer(String name, Map<String, String> attributes,
                                                         int depth) {
-        xmlBuilder.append("\t".repeat(Math.max(0, depth)));
+        xmlBuilder.append("    ".repeat(Math.max(0, depth)));
         xmlBuilder.append("<");
         xmlBuilder.append(name);
         attributes.forEach((key, value) -> {
             xmlBuilder.append(" ");
             xmlBuilder.append(key);
-            xmlBuilder.append("=");
+            xmlBuilder.append("=\"");
             xmlBuilder.append(value);
+            xmlBuilder.append("\"");
         });
         xmlBuilder.append(">\n");
     }
@@ -83,7 +82,7 @@ public class XMLBuilder {
     public void createSingleElement(String name, String value,
                                     Map<String, String> attributes,
                                     int depth) {
-        xmlBuilder.append("\t".repeat(Math.max(0, depth)));
+        xmlBuilder.append("    ".repeat(Math.max(0, depth)));
         xmlBuilder.append("<");
         xmlBuilder.append(name);
         attributes.forEach((key, val) -> {
@@ -108,7 +107,7 @@ public class XMLBuilder {
     }
 
     public void createEnd(String name, int depth) {
-        xmlBuilder.append("\t".repeat(Math.max(0, depth - 1)));
+        xmlBuilder.append("    ".repeat(Math.max(0, depth - 1)));
         xmlBuilder.append("</");
         xmlBuilder.append(name);
         xmlBuilder.append(">\n");

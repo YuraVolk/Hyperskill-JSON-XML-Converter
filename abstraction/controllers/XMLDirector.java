@@ -12,7 +12,6 @@ import java.util.regex.Pattern;
 
 
 public class XMLDirector {
-    private XML xml;
     private String content;
     private XMLBuilder builder = new XMLBuilder(true);
     private JSONParser parser = new JSONParser();

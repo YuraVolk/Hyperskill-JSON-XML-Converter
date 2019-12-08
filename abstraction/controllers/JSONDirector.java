@@ -1,6 +1,8 @@
 package converter.abstraction.controllers;
 
+import converter.PseudoElement;
 import converter.abstraction.data.JSON;
+import converter.abstraction.data.XML;
 import converter.implementation.json.JSONBuilder;
 import converter.implementation.json.XMLParser;
 
@@ -11,11 +13,12 @@ import java.util.Stack;
 import java.util.Collections;
 
 public class JSONDirector {
-    private JSON json;
+    private XML xml;
     private List<String> content;
     private JSONBuilder builder = new JSONBuilder();
     private XMLParser parser = new XMLParser();
     private Stack<String> executionStack = new Stack<>();
+    private List<PseudoElement> requests = new ArrayList<>();
 
     private void printContainer(String line, String process) {
         Map<String, String> attributes;
@@ -33,6 +36,8 @@ public class JSONDirector {
             System.out.println("attributes:");
             attributes.forEach((key, value) -> System.out.println(key + " = " + value));
         }
+
+        xml.addContainer(executionStack.peek(), attributes);
     }
 
     private void printElement(String line, String process) {
@@ -43,7 +48,6 @@ public class JSONDirector {
         System.out.println(executionStack.toString()
                 .substring(1, executionStack.toString()
                         .length() - 1));
-        executionStack.pop();
 
         String content = parser.getContent(line,
                 process);
@@ -59,16 +63,23 @@ public class JSONDirector {
             attributes.forEach((key, value) -> System.out.println(key + " = " + value));
         }
 
+        System.out.println(executionStack.peek());
+        xml.addElement(executionStack.peek(), content, attributes);
+        executionStack.pop();
     }
 
     private void parseElement(List<String> elements) {
        String process;
-
+       xml = XML.root();
        for (int i = 0; i < elements.size(); i++) {
            process = parser.extractName(elements.get(i));
 
            if (parser.isParent(elements.get(i))) {
                if (process.startsWith("/")) {
+                   System.out.println("**************************************");
+                   System.out.println("Container end of " + executionStack.peek());
+                   System.out.println("**************************************");
+                   xml.goUp();
                    executionStack.pop();
                    continue;
                } else {
@@ -80,6 +91,10 @@ public class JSONDirector {
 
            System.out.println(" ");
        }
+
+       xml.getChildren().forEach(XML::generate);
+       List<PseudoElement> requests = XML.getRequests();
+       System.out.println(requests);
     }
 
     private List<String> beautifyContent(String content) {

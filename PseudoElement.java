@@ -8,6 +8,7 @@ public class PseudoElement {
     private String name;
     private String value;
     private boolean goUp = false;
+    private boolean hasContainers = false;
 
     public static PseudoElement goUpRequest() {
         PseudoElement element = new PseudoElement();
@@ -16,7 +17,8 @@ public class PseudoElement {
     }
 
     public static PseudoElement container(String name,
-                                          Map<String, String> attributes) {
+                                          Map<String, String> attributes,
+                                          boolean hasContainers) {
         PseudoElement element = new PseudoElement();
         element.name = name;
         element.attributes = attributes;
@@ -33,6 +35,7 @@ public class PseudoElement {
         element.isParent = false;
         return element;
     }
+
 
     public String getValue() {
         return value;
@@ -63,6 +66,7 @@ public class PseudoElement {
                 ",\n name=" + name  +
                 ",\n value=" + value +
                 ",\n goUp=" + goUp +
+                ",\n hasContainers=" + hasContainers +
                 "\n}\n\n";
     }
 }
