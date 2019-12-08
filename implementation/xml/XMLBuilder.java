@@ -9,7 +9,7 @@ public class XMLBuilder {
     private JSON json = JSON.root();
 
     public void createContainer(Stack<String> path, String name) {
-        json.addChild(name);
+        json.addChild(name, true);
     }
 
     public void goUp() {
@@ -17,7 +17,6 @@ public class XMLBuilder {
     }
 
     public void print() {
-        System.out.println("--------------PRINT------------------------");
         json.getChildren().forEach(JSON::print);
     }
 
@@ -38,7 +37,7 @@ public class XMLBuilder {
     }
 
     public void setValue(String value) {
-        json.setValue(value);
+        json.setValue(value, true);
     }
 
     public void createSingleElement(String name, String value, Stack<String> path) {
@@ -49,8 +48,8 @@ public class XMLBuilder {
         if (name.length() == 0 || name.equals("#"))  {
             json.stripAttributes();
         } else {
-            json.addChild(name);
-            json.setValue(value);
+            json.addChild(name, true);
+            json.setValue(value, true);
             json.goUp();
         }
     }

@@ -1,7 +1,5 @@
 package converter.abstraction.data;
 
-import converter.Pair;
-
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -13,24 +11,30 @@ public class JSON {
     private static JSON current;
     private JSON parent;
     private boolean isInvalid = false;
-
+    private boolean stripped = false;
+    private Set<String> additionHistory = new LinkedHashSet<>();
 
     private JSON(String name) {
         this.name = name;
     }
 
-    public void setValue(String value) {
+    public void setValue(String value, boolean add) {
+
         if (current.isInvalid) {
-            current.addChild(current.name);
-            current.setValue(value);
+            current.addChild(current.name, true);
+            current.setValue(value, false);
             current.goUp();
         } else {
             current.value = value;
         }
+
+        if (add) {
+            current.additionHistory.add("#" + current.name);
+        }
     }
 
     public void addAttribute(String key, String value) {
-
+        current.additionHistory.add(key);
         if (value.endsWith(",")) {
             current.attributes.put(key, value.substring(value.length() - 1));
         } else {
@@ -38,8 +42,12 @@ public class JSON {
         }
     }
 
-    public void addChild(String name) {
+    public void addChild(String name, boolean toAdd) {
         boolean isValid = true;
+
+        if (toAdd) {
+            current.additionHistory.add("#" + current.name);
+        }
 
         if (name.length() >= 1) {
             if (current.name.equals(name.substring(1)) && name.startsWith("#") && current.isInvalid) {
@@ -65,30 +73,33 @@ public class JSON {
         }
     }
 
-    public String getValue() {
-        return current.value;
-    }
-
-    public String getName() {
-        return current.name;
-    }
-
     public void stripAttributes() {
         Map<String, String> map = current.attributes;
 
         map.forEach((key, value) -> {
-            addChild(key);
-            setValue(value);
+            addChild(key, false);
+            setValue(value, false);
             goUp();
+            current.stripped = true;
         });
 
         if (current.value != null) {
             String val = current.value;
-
-            addChild(current.name);
-            setValue(val);
+            addChild("#" + current.name, false);
+            setValue(val, false);
             goUp();
         }
+
+        if (current.children.size() > 0) {
+            if (current.children.get(0).name.equals(current.name)
+                    && current.name.startsWith("#")
+                    && current.value == null
+                    && current.children.get(0).value != null) {
+                current.value = current.children.get(0).value;
+                current.children.clear();
+            }
+        }
+
 
         current.isInvalid = true;
         current.attributes.clear();
@@ -185,12 +196,12 @@ public class JSON {
         }
 
         if (current.isInvalid) {
-            stripAttributes();
-            if (current.name.equals("inner12")) {
+                stripAttributes();
                 Iterator<JSON> iterator = current.children.iterator();
                 while (iterator.hasNext())  {
                     JSON child = iterator.next();
-                    if (child.name.startsWith("@")) {
+                    if (child.name.startsWith("@")
+                            || child.name.startsWith("#")) {
                         if (current.children.
                                 stream()
                                 .anyMatch(o -> o.name
@@ -201,7 +212,21 @@ public class JSON {
 
                     }
                 }
-            }
+
+                if (current.stripped && current.children.size() > 1 && current.additionHistory.size() > 0) {
+                    int currentIndex = 0;
+                    for (String line : current.additionHistory) {
+                            JSON json =  current.children.stream()
+                                    .filter(customer -> line.equals(customer.name))
+                                    .findAny()
+                                    .orElse(null);
+                            if (json != null) {
+                                current.children.remove(json);
+                                current.children.add(currentIndex, json);
+                                currentIndex++;
+                            }
+                    }
+                }
 
         }
 

@@ -37,7 +37,6 @@ class Converter {
                 parseJSON();
             }
             long d = System.currentTimeMillis() - c;
-            System.out.println(d);
         } catch (IOException e) {
             System.out.println("Error while reading file occurred.");
             System.out.println(e.getMessage());
