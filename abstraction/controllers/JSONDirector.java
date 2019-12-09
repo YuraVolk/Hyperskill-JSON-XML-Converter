@@ -69,6 +69,7 @@ public class JSONDirector {
     }
 
     private void parseElement(List<String> elements) {
+
        String process;
        xml = XML.root();
        for (int i = 0; i < elements.size(); i++) {
@@ -95,6 +96,8 @@ public class JSONDirector {
        xml.getChildren().forEach(XML::generate);
        List<PseudoElement> requests = XML.getRequests();
        executionStack.clear();
+
+//       requests.forEach(System.out::println);
 
        builder.start();
        for (PseudoElement request : requests) {

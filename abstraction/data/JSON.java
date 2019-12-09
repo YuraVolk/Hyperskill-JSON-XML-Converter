@@ -148,16 +148,17 @@ public class JSON {
         Map<String, String > curAttr = new LinkedHashMap<>();
 
         if (name.length() != 0) {
-            if (name.startsWith("#") || name.startsWith("@")) {
+            if ((name.startsWith("#") || name.startsWith("@")) && isInvalid) {
                 name = name.substring(1);
             }
+
             if (!name.startsWith("#") || isInvalid) {
-            /*    System.out.println("Element:");
+             /*  System.out.println("Element:");
                 System.out.print("path = " );
                 System.out.println(printPath());*/
                 if (children.size() == 0) {
                     if ((isInvalid && value == null) || value.equals("\"")) {
-                  //      System.out.println("value = \"\"");
+                      //  System.out.println("value = \"\"");
                         curVal = "";
                     } else {
                         if (value.startsWith("\"") && !value.endsWith("\"")) {
@@ -171,9 +172,9 @@ public class JSON {
                         }
 
                         if (value.endsWith("\"") || value.equals("null")) {
-                         //   System.out.println("value = " + value);
+                     //       System.out.println("value = " + value);
                         } else {
-                          //  System.out.println("value = \"" + value + "\"");
+                         //   System.out.println("value = \"" + value + "\"");
                         }
 
                         if (value.endsWith("\"")) {
@@ -185,30 +186,39 @@ public class JSON {
                     }
                 }
                 if (attributes.size() != 0) {
-                   // System.out.println("attributes:");
+               //     System.out.println("attributes:");
                     attributes.forEach((key, value) -> {
                         if (key.startsWith("@")) {
-                          //  System.out.println(key.substring(1) + " = \"" + value + "\"");
+                         //   System.out.println(key.substring(1) + " = \"" + value + "\"");
                             curAttr.put(key.substring(1), value);
                         } else {
-                        //    System.out.println(key + " = \"" + value + "\"");
+                          //  System.out.println(key + " = \"" + value + "\"");
                             curAttr.put(key, value);
                         }
                     });
-
-
                 }
-                //System.out.println("invalid = " + isInvalid);
+               // System.out.println("invalid = " + isInvalid);
                // System.out.println(" ");
+
+            }
+
+
+            if (name.startsWith("@")) {
+                name = name.substring(1);
             }
 
             if (children.size() != 0) {
-                requests.add(PseudoElement.container(name, curAttr, false));
+                if (!name.startsWith("#") || isInvalid) {
+                    requests.add(PseudoElement.container(name, curAttr, false));
+                }
+
                 children.forEach(JSON::print);
-              //  System.out.println("*******************************************");
-              //  System.out.println("End of container " + name);
-                requests.add(PseudoElement.goUpRequest());
-             //   System.out.println("*******************************************");
+                //  System.out.println("*******************************************");
+                //  System.out.println("End of container " + name);
+                if (!name.startsWith("#") || isInvalid) {
+                    requests.add(PseudoElement.goUpRequest());
+                }
+                //   System.out.println("*******************************************");
             } else {
                 requests.add(PseudoElement.element(name, curVal, curAttr));
             }

@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 public class JSONBuilder {
     private StringBuilder builder = new StringBuilder();
+    private int numberOfBraces = 0;
 
     public Map<String, String> listOfAttributes(String attributes) {
         Pattern pattern = Pattern.compile(".+?\\s*=\\s*\".+?\"");
@@ -118,6 +119,8 @@ public class JSONBuilder {
     public void createContainer(String name, boolean valid,
                                 Map<String, String> attributes,
                                 int depth) {
+        boolean hasAttributes = false;
+
         builder.append("    ".repeat(Math.max(0, depth + 1)));
 
         builder.append("\"");
@@ -125,6 +128,7 @@ public class JSONBuilder {
         builder.append("\": {\n");
 
         if (attributes.size() > 0) {
+            hasAttributes = true;
             attributes.forEach((key, val) -> {
                 builder.append("    ".repeat(Math.max(0, depth + 1)));
                 builder.append("\"@");
@@ -138,11 +142,14 @@ public class JSONBuilder {
                 builder.append(",\n");
             });
 
-            builder.setLength(builder.length() - 2);
+            builder.setLength(builder.length() - 1);
             builder.append("\n");
         }
 
         if (valid) {
+            if (hasAttributes) {
+                numberOfBraces++;
+            }
             builder.append("    ".repeat(Math.max(0, depth + 1)));
             builder.append("\"#");
             builder.append(name);
@@ -153,6 +160,11 @@ public class JSONBuilder {
     public void createEnd(boolean isLastChild, int depth) {
         builder.append("    ".repeat(Math.max(0, depth)));
 
+        if (numberOfBraces > 0) {
+            builder.append("}\n");
+            numberOfBraces--;
+        }
+        builder.append("    ".repeat(Math.max(0, depth)));
         builder.append("}");
         if (!isLastChild) {
             builder.append(",");

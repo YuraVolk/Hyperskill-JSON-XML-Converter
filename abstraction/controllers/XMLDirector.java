@@ -30,7 +30,6 @@ public class XMLDirector {
     }
 
     private void parseElement(List<String> lines) {
-
         String name;
 
         for (String line : lines) {
@@ -70,6 +69,8 @@ public class XMLDirector {
         List<PseudoElement> requests = builder.result();
         jsonStructure.clear();
         builder = new XMLBuilder(false);
+
+        //requests.forEach(System.out::println);
 
         for (PseudoElement request : requests) {
             if (request.isGoUp()) {
