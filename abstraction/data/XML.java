@@ -14,7 +14,6 @@ public class XML {
     private List<XML> children = new ArrayList<>();
     private static XML current;
     private boolean containsContainer = false;
-    private static List<XML> order = new ArrayList<>();
     private static List<PseudoElement> structure = new ArrayList<>();
 
     private XML(String elementName) {
@@ -22,7 +21,7 @@ public class XML {
     }
 
     public void addContainer(String name, Map<String, String> attributes) {
-        System.out.println("Request to add " + name  + " " + attributes);
+     //   System.out.println("Request to add " + name  + " " + attributes);
         current.containsContainer = true;
         current.children.add(new XML(name));
         current.children.get(current.children.size() - 1).parent = current;
@@ -32,17 +31,13 @@ public class XML {
 
     public void addElement(String name, String value,
                                   Map<String, String> attributes) {
-        System.out.println("Request to add " + name + " " + value + " " + attributes);
+      //  System.out.println("Request to add " + name + " " + value + " " + attributes);
         current.children.add(new XML(name));
         current.children.get(current.children.size() - 1).parent = current;
         current = current.children.get(current.children.size() - 1);
         current.attributes = attributes;
         current.value = value;
         goUp();
-
-        if (current.children.size() > 2) { //crunch. exists due to stage problems
-            current.containsContainer = true;
-        }
     }
 
     public List<XML> getChildren() {
@@ -62,12 +57,25 @@ public class XML {
     }
 
     public void generate() {
+        boolean isLast = false;
+
+        if (parent != null) {
+            if (elementName.equals(
+                    parent.children.get(parent.children.size() - 1)
+                            .elementName)) {
+                isLast = true;
+            }
+        }
+
+
         if (children.size() > 0) {
-            structure.add(PseudoElement.container(elementName, attributes, containsContainer));
+            structure.add(PseudoElement.container(elementName, attributes, containsContainer)
+                                        .setChild(isLast));
             children.forEach(XML::generate);
-            structure.add(PseudoElement.goUpRequest());
+            structure.add(PseudoElement.goUpRequest().setChild(isLast));
         } else {
-            structure.add(PseudoElement.element(elementName, value, attributes));
+            structure.add(PseudoElement.element(elementName, value, attributes)
+                                    .setChild(isLast));
         }
     }
 

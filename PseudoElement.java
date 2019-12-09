@@ -8,7 +8,7 @@ public class PseudoElement {
     private String name;
     private String value;
     private boolean goUp = false;
-    private boolean hasContainers = false;
+    private boolean isLast = false;
 
     public static PseudoElement goUpRequest() {
         PseudoElement element = new PseudoElement();
@@ -36,6 +36,14 @@ public class PseudoElement {
         return element;
     }
 
+    public PseudoElement setChild(boolean isLast) {
+        this.isLast = isLast;
+        return this;
+    }
+
+    public boolean isLast() {
+        return isLast;
+    }
 
     public String getValue() {
         return value;
@@ -58,19 +66,16 @@ public class PseudoElement {
         return goUp;
     }
 
-    public boolean hasContainers() {
-        return hasContainers;
-    }
 
     @Override
     public String toString() {
-        return "PseudoElement{\n" +
+        return "PseudoElement{" +
                 "isParent=" + isParent +
-                ",\n attributes=" + attributes +
-                ",\n name=" + name  +
-                ",\n value=" + value +
-                ",\n goUp=" + goUp +
-                ",\n hasContainers=" + hasContainers +
-                "\n}\n\n";
+                ", attributes=" + attributes +
+                ", name='" + name + '\'' +
+                ", value='" + value + '\'' +
+                ", goUp=" + goUp +
+                ", isLast=" + isLast +
+                '}';
     }
 }

@@ -15,6 +15,7 @@ public class XMLBuilder {
     public void goUp() {
         json.goUp();
     }
+
     public void print() {
         if (json.getChildren().size() > 1) {
             json.print();

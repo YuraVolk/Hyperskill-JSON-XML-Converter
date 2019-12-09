@@ -24,18 +24,18 @@ public class JSONDirector {
         Map<String, String> attributes;
 
         executionStack.push(process);
-        System.out.println("Element:");
+       /*System.out.println("Element:");
         System.out.print("path = ");
         System.out.println(executionStack.toString()
                 .substring(1, executionStack.toString()
-                        .length() - 1));
+                        .length() - 1));*/
 
         attributes = builder.listOfAttributes(parser.parseAttributes(line));
 
-        if (attributes.size() != 0) {
+       /* if (attributes.size() != 0) {
             System.out.println("attributes:");
             attributes.forEach((key, value) -> System.out.println(key + " = " + value));
-        }
+        }*/
 
         xml.addContainer(executionStack.peek(), attributes);
     }
@@ -43,27 +43,27 @@ public class JSONDirector {
     private void printElement(String line, String process) {
         Map<String, String> attributes;
 
-        System.out.print("Element:\npath = ");
+    //    System.out.print("Element:\npath = ");
         executionStack.push(process);
-        System.out.println(executionStack.toString()
+       /* System.out.println(executionStack.toString()
                 .substring(1, executionStack.toString()
-                        .length() - 1));
+                        .length() - 1));*/
 
         String content = parser.getContent(line,
                 process);
-        if (content != null) {
+      /*  if (content != null) {
             System.out.println("value = \"" + content + "\"");
         } else {
             System.out.println("value = null");
-        }
+        }*/
 
         attributes = builder.listOfAttributes(parser.parseAttributes(line));
-        if (attributes.size() != 0) {
+       /* if (attributes.size() != 0) {
             System.out.println("attributes:");
             attributes.forEach((key, value) -> System.out.println(key + " = " + value));
-        }
+        }*/
 
-        System.out.println(executionStack.peek());
+        //System.out.println(executionStack.peek());
         xml.addElement(executionStack.peek(), content, attributes);
         executionStack.pop();
     }
@@ -76,9 +76,9 @@ public class JSONDirector {
 
            if (parser.isParent(elements.get(i))) {
                if (process.startsWith("/")) {
-                   System.out.println("**************************************");
+                  /* System.out.println("**************************************");
                    System.out.println("Container end of " + executionStack.peek());
-                   System.out.println("**************************************");
+                   System.out.println("**************************************");*/
                    xml.goUp();
                    executionStack.pop();
                    continue;
@@ -89,7 +89,7 @@ public class JSONDirector {
                 printElement(elements.get(i), process);
            }
 
-           System.out.println(" ");
+          // System.out.println(" ");
        }
 
        xml.getChildren().forEach(XML::generate);
@@ -99,11 +99,11 @@ public class JSONDirector {
        builder.start();
        for (PseudoElement request : requests) {
             if (request.isGoUp()) {
-                builder.createEnd(false, executionStack.size());
+                builder.createEnd(request.isLast(), executionStack.size());
                 executionStack.pop();
             } else if (request.isParent()) {
                 builder.createContainer(request.getName(),
-                        request.hasContainers(),
+                        request.getAttributes().size() > 0,
                         request.getAttributes(),
                         executionStack.size());
                 executionStack.push(request.getName());
@@ -111,7 +111,7 @@ public class JSONDirector {
                 builder.createSingleElement(request.getName(),
                                             request.getValue(),
                                             request.getAttributes(),
-                                            false,
+                                            request.isLast(),
                                             executionStack.size());
             }
        }

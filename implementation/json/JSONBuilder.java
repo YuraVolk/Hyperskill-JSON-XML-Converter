@@ -63,11 +63,11 @@ public class JSONBuilder {
                 }
                 builder.append(",\n");
             });
+
             builder.setLength(builder.length() - 2);
 
-            if (!isLastChild) {
-                builder.append(",");
-            }
+            builder.append(",");
+
             builder.append("\n");
 
             builder.append("    ".repeat(Math.max(0, depth + 2)));
@@ -77,7 +77,6 @@ public class JSONBuilder {
             if (value != null) {
                 if (value.equals("null")) {
                     builder.append(value);
-                    System.out.println("yay");
                 } else {
                     if (!value.startsWith("\"") && !value.startsWith("\"")) {
                         value = "\"" + value;
@@ -86,7 +85,6 @@ public class JSONBuilder {
                     builder.append("\"");
                 }
             } else {
-
                 builder.append(value);
             }
 
@@ -124,7 +122,6 @@ public class JSONBuilder {
 
         builder.append("\"");
         builder.append(name);
-        System.out.println(name);
         builder.append("\": {\n");
 
         if (attributes.size() > 0) {
@@ -157,7 +154,7 @@ public class JSONBuilder {
         builder.append("    ".repeat(Math.max(0, depth)));
 
         builder.append("}");
-        if (isLastChild) {
+        if (!isLastChild) {
             builder.append(",");
         }
         builder.append("\n");
