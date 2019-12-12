@@ -38,6 +38,9 @@ public class JSON {
     }
 
     public void addAttribute(String key, String value) {
+        if (value.replaceAll("\\s", "").equals("{}")) {
+            value = "";
+        }
         current.additionHistory.add(key);
         if (value.endsWith(",")) {
             current.attributes.put(key, value.substring(value.length() - 1));

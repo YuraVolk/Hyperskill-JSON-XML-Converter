@@ -141,7 +141,7 @@ public class XMLDirector {
 
             if (arrays.size() > 0 &&
                     lines.get(i)
-                            .matches("(?:null|true|false|\\d+(?:\\.\\d+)?|\\[|(?<!:)\\s*?\".*?\"|\\s*?\\{),?")) {
+                            .matches("(?:null|true|false|\\d+(?:\\.\\d+)?|\\[|(?<!:)\\s*?\".*?\"|\\s*?\\{|(?:\\s*?[\\[{]\\s*?[\\]}]))\\s*?,?")) {
                 if (!lines.get(i).matches("\".+?\"\\s*?:\\s*?.+")) {
                     String newLine = "\"element\":".concat(lines.get(i));
                     lines.set(i, newLine);
