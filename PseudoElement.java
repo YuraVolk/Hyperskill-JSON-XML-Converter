@@ -38,6 +38,7 @@ public class PseudoElement {
         element.value = value;
         element.attributes = attributes;
         element.isParent = false;
+
         return element;
     }
 

@@ -81,10 +81,10 @@ public class XML {
             structure.add(PseudoElement.container(elementName, attributes, containsContainer)
                                         .setChild(isLast).setArray(isArray).setArrayElement(isArrayElement));
             children.forEach(XML::generate);
-            structure.add(PseudoElement.goUpRequest().setChild(isLast).setArray(isArray));
+            structure.add(PseudoElement.goUpRequest().setChild(isLast).setArray(isArray).setArrayElement(isArrayElement));
         } else {
             structure.add(PseudoElement.element(elementName, value, attributes)
-                                    .setChild(isLast).setArray(isArray).setArrayElement(isArrayElement));
+                                    .setChild(isLast).setArray(isArray).setArrayElement(parent.isArray));
         }
     }
 

@@ -101,7 +101,19 @@ public class JSONDirector {
        builder.start();
        for (PseudoElement request : requests) {
             if (request.isGoUp()) {
-                builder.createEnd(request.isArray(), executionStack.size());
+                boolean hasAttributes;
+                if (request.getAttributes() != null) {
+                    if (request.getAttributes().size() == 0) {
+                        hasAttributes = false;
+                    } else {
+                        hasAttributes = true;
+                    }
+                } else {
+                    hasAttributes = false;
+                }
+
+
+                builder.createEnd(request.isArray(), executionStack.size(), request.isArray());
                 executionStack.pop();
             } else if (request.isParent()) {
                 builder.createContainer(request.getName(),
@@ -115,10 +127,11 @@ public class JSONDirector {
                 builder.createSingleElement(request.getName(),
                                             request.getValue(),
                                             request.getAttributes(),
-                                            request.isLast(),
+                                            request.isArrayElement(),
                                             executionStack.size());
             }
        }
+
        builder.end();
 
        builder.printResults();

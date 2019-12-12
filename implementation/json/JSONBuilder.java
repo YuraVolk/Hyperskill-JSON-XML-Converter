@@ -41,8 +41,15 @@ public class JSONBuilder {
 
 
     public void end() {
-        builder.setLength(builder.length() - 2);
-        builder.append("\n");
+        if (builder.toString().endsWith(",\n")) {
+            builder.setLength(builder.length() - 2);
+
+            if (builder.toString().endsWith(",\n")) {
+                builder.setLength(builder.length() - 2);
+                builder.append("\n");
+            }
+        }
+
         builder.append("}");
     }
 
@@ -54,12 +61,14 @@ public class JSONBuilder {
             builder.setLength(builder.length() - 2);
             builder.append("\n");
         }*/
-
         builder.append("    ".repeat(Math.max(0, depth + 1)));
+        System.out.println(isParentArray);
+        if (!isParentArray) {
+            builder.append("\"");
+            builder.append(name);
+            builder.append("\": ");
+        }
 
-        builder.append("\"");
-        builder.append(name);
-        builder.append("\": ");
         if (attributes.size() > 0) {
             builder.append("{\n");
             attributes.forEach((key, val) -> {
@@ -131,9 +140,18 @@ public class JSONBuilder {
 
         builder.append("    ".repeat(Math.max(0, depth + 1)));
 
-        builder.append("\"");
-        builder.append(name);
-        builder.append("\": {\n");
+        if (!isParentArray) {
+            builder.append("\"");
+            builder.append(name);
+            builder.append("\": ");
+        }
+
+        if (isArray && attributes.size() == 0) {
+            builder.append("[\n");
+        } else {
+            builder.append("{\n");
+        }
+
 
         if (attributes.size() > 0) {
             hasAttributes = true;
@@ -158,14 +176,19 @@ public class JSONBuilder {
             if (hasAttributes) {
                 numberOfBraces++;
             }
+
             builder.append("    ".repeat(Math.max(0, depth + 1)));
             builder.append("\"#");
             builder.append(name);
-            builder.append("\": {\n");
+            if (isArray) {
+                builder.append("\": [\n");
+            } else {
+                builder.append("\": {\n");
+            }
         }
     }
 
-    public void createEnd(boolean isArray, int depth) {
+    public void createEnd(boolean isArray, int depth, boolean isArrayElement) {
 
         if (builder.toString().endsWith(",\n")) {
             builder.setLength(builder.length() - 2);
@@ -175,19 +198,17 @@ public class JSONBuilder {
         //builder.append("\n");
         builder.append("    ".repeat(Math.max(0, depth)));
 
-        if (numberOfBraces > 0) {
-            if (isArray) {
-                builder.append("],\n");
-            } else {
-                builder.append("},\n");
-            }
-            numberOfBraces--;
-        }
+
         builder.append("    ".repeat(Math.max(0, depth)));
         if (isArray) {
-            builder.append("],\n");
+            builder.append("]");
         } else {
             builder.append("}");
+        }
+
+        if (numberOfBraces > 0 && isArrayElement) {
+            builder.append("}\n");
+            numberOfBraces--;
         }
         //System.out.println(isLastChild);
         //if (!isLastChild) {
