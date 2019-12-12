@@ -38,6 +38,8 @@ public class JSONBuilder {
     }
 
     public void end() {
+        builder.setLength(builder.length() - 2);
+        builder.append("\n");
         builder.append("}");
     }
 
@@ -92,9 +94,9 @@ public class JSONBuilder {
             builder.append("\n");
             builder.append("    ".repeat(Math.max(0, depth + 1)));
             builder.append("}");
-            if (!isLastChild) {
+          //  if (!isLastChild) {
                 builder.append(",");
-            }
+          //  }
 
         } else {
             if (value != null) {
@@ -109,10 +111,11 @@ public class JSONBuilder {
                 builder.append("null");
             }
 
-            if (!isLastChild) {
+          //  if (!isLastChild) {
                 builder.append(",");
-            }
+            //}
         }
+        builder.append("\n");
         builder.append("\n");
     }
 
@@ -158,6 +161,8 @@ public class JSONBuilder {
     }
 
     public void createEnd(boolean isLastChild, int depth) {
+        builder.setLength(builder.length() - 2);
+        builder.append("\n");
         builder.append("    ".repeat(Math.max(0, depth)));
 
         if (numberOfBraces > 0) {
@@ -166,13 +171,14 @@ public class JSONBuilder {
         }
         builder.append("    ".repeat(Math.max(0, depth)));
         builder.append("}");
-        if (!isLastChild) {
+        //System.out.println(isLastChild);
+        //if (!isLastChild) {
             builder.append(",");
-        }
+        //}
         builder.append("\n");
     }
 
     public void printResults() {
-        System.out.println(builder);
+        System.out.println(builder.toString().trim());
     }
 }

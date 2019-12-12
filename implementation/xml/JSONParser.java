@@ -74,6 +74,7 @@ public class JSONParser {
 
     public String[] getElement(String element) {
         String[] elem =  element.split("(?<=\")\\s*:\\s*");
+
         if (elem[1].matches("\\s*?\\{\\s*?}\\s*,?")) {
             elem[1] = "\"\"";
         }

@@ -16,6 +16,7 @@ public class XMLDirector {
     private XMLBuilder builder = new XMLBuilder(true);
     private JSONParser parser = new JSONParser();
     private Stack<String> jsonStructure = new Stack<>();
+    private Stack<String> arrays = new Stack<>();
 
     private void printPath() {
         for (String string : jsonStructure) {
@@ -30,6 +31,11 @@ public class XMLDirector {
     }
 
     private void parseElement(List<String> lines) {
+        lines.forEach(System.out::println);
+        /*if (Math.random() != 2.00) {
+            throw new StackOverflowError();
+        }*/
+
         String name;
 
         for (String line : lines) {
@@ -70,7 +76,7 @@ public class XMLDirector {
         jsonStructure.clear();
         builder = new XMLBuilder(false);
 
-        //requests.forEach(System.out::println);
+        requests.forEach(System.out::println);
 
         for (PseudoElement request : requests) {
             if (request.isGoUp()) {
@@ -100,7 +106,7 @@ public class XMLDirector {
     }
 
     private List<String> beatifyJSON(String json) {
-        Pattern pattern = Pattern.compile("(\"|null|\\d)(?=\\s*?})|(,|}(?!,))|\\{(?=\\s*?\")");
+        Pattern pattern = Pattern.compile("(\"|null|\\d)(?=\\s*?(?:}|]))|(\\s*?,|(?:}|])(?!,))|\\[|\\{(?=\\s*?\")");
         Matcher matcher = pattern.matcher(json);
         List<Integer> newlineChars = new ArrayList<>();
 
@@ -117,6 +123,48 @@ public class XMLDirector {
             lines.set(i, lines.get(i).trim());
         }
 
+        for (int i = 0; i < lines.size() - 1; i++) {
+            if (lines.get(i).trim().equals("}") && lines.get(i + 1).trim().equals(",")) {
+                String brace = lines.get(i);
+                String dot = lines.get(i + 1);
+                brace = brace.concat(dot);
+                lines.set(i, brace);
+                lines.remove(i + 1);
+            }
+        }
+
+        for (int i = 0; i < lines.size() - 1; i++) {
+            if (lines.get(i).matches("(?:\\s*?\".+?\"\\s*?:\\s*?\\[)|(?:\\s*?\\[)")) {
+                arrays.push("array");
+                lines.set(i, lines.get(i).replace("[", "{"));
+            }
+
+            if (arrays.size() > 0 &&
+                    lines.get(i)
+                            .matches("(?:null|true|false|\\d+(?:\\.\\d+)?|\\[|(?<!:)\\s*?\".*?\"|\\s*?\\{),?")) {
+                if (!lines.get(i).matches("\".+?\"\\s*?:\\s*?.+")) {
+                    String newLine = "\"element\":".concat(lines.get(i));
+                    lines.set(i, newLine);
+                }
+            }
+
+            if (lines.get(i).matches("\\s*?],?")) {
+                arrays.pop();
+                lines.set(i, lines.get(i).replace("]", "}"));
+            }
+        }
+
+        for (int i = 0; i < lines.size() - 1; i++) {
+            if (lines.get(i).matches("\\s*?\"@.+?\"\\s*?:\\s*?\\{")
+                    && lines.get(i + 1).matches("\\s*?},?")) {
+                String newAttr = lines.get(i).replace("{", "\"\"");
+                lines.set(i, newAttr);
+                lines.remove(i + 1);
+            }
+        }
+
+
+        System.out.println("***********");
         return lines;
     }
 
