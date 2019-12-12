@@ -42,6 +42,7 @@ public class XMLParser {
         pattern = Pattern.compile(originalPattern);
         matcher = pattern.matcher(element);
 
+
         if (matcher.find()) {
             return matcher.group().replaceAll("</.+?>", "");
         } else {

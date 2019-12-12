@@ -62,6 +62,7 @@ public class JSONDirector {
                    printContainer(elements.get(i), process);
                }
            } else {//\"(?=})|(,|}(?!,))|{(?=\")
+
                 printElement(elements.get(i), process);
            }
 
@@ -124,6 +125,8 @@ public class JSONDirector {
         }
 
         for (int i = 0; i < lines.length - 1; i++) {
+
+
             if (parser.extractName(lines[i]).equals(
                     lines[i+1].trim().substring(2, lines[i+1].trim().length() - 1))) {
                 lines[i] = lines[i].substring(0, lines[i].length() - 1);
@@ -142,6 +145,7 @@ public class JSONDirector {
 
         List<String> finalList = new ArrayList<>();
         Collections.addAll(finalList, builder.toString().split("\n"));
+
 
         return finalList;
     }

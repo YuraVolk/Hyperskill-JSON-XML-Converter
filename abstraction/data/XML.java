@@ -17,6 +17,7 @@ public class XML {
     private static List<PseudoElement> structure = new ArrayList<>();
     private boolean isArray = false;
     private boolean isArrayElement = false;
+    private boolean isContainer = false;
 
     private XML(String elementName) {
         this.elementName = elementName;
@@ -38,7 +39,9 @@ public class XML {
         current = current.children.get(current.children.size() - 1);
         current.attributes = attributes;
         current.value = value;
-        goUp();
+        if (current.parent != null) {
+            current = current.parent;
+        }
     }
 
     public List<XML> getChildren() {
@@ -46,6 +49,7 @@ public class XML {
     }
 
     public void goUp() {
+        current.isContainer = true;
         if (current.parent != null) {
             current = current.parent;
         }
@@ -75,6 +79,12 @@ public class XML {
                 children.forEach(child -> child.isArrayElement = true);
             }
         }
+
+        if (children.size() == 0 && value == null && isContainer
+                && attributes.size() == 0) {
+            value = "";
+        }
+
 
         if (children.size() > 0) {
             structure.add(PseudoElement.container(elementName, attributes, containsContainer)
