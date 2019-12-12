@@ -3,6 +3,7 @@ package converter.implementation.json;
 import converter.abstraction.data.JSON;
 
 import javax.swing.plaf.LabelUI;
+import java.io.PrintStream;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.logging.Logger;
@@ -14,6 +15,7 @@ public class JSONBuilder {
     private int numberOfBraces = 0;
 
     public Map<String, String> listOfAttributes(String attributes) {
+        attributes = attributes.replaceAll("'", "\"");
         Pattern pattern = Pattern.compile(".+?\\s*=\\s*\".+?\"");
         Matcher matcher = pattern.matcher(attributes);
 
@@ -37,6 +39,7 @@ public class JSONBuilder {
         builder.append("{\n");
     }
 
+
     public void end() {
         builder.setLength(builder.length() - 2);
         builder.append("\n");
@@ -45,7 +48,12 @@ public class JSONBuilder {
 
     public void createSingleElement(String name, String value,
                                     Map<String, String> attributes,
-                                    boolean isLastChild, int depth) {
+                                    boolean isParentArray, int depth) {
+
+       /* if (builder.toString().endsWith(",\n")) {
+            builder.setLength(builder.length() - 2);
+            builder.append("\n");
+        }*/
 
         builder.append("    ".repeat(Math.max(0, depth + 1)));
 
@@ -64,14 +72,9 @@ public class JSONBuilder {
                 } else {
                     builder.append(val);
                 }
-                builder.append(",\n");
+                builder.append(",");
+                builder.append("\n");
             });
-
-            builder.setLength(builder.length() - 2);
-
-            builder.append(",");
-
-            builder.append("\n");
 
             builder.append("    ".repeat(Math.max(0, depth + 2)));
             builder.append("\"#");
@@ -88,14 +91,14 @@ public class JSONBuilder {
                     builder.append("\"");
                 }
             } else {
-                builder.append(value);
+                builder.append("null");
             }
 
             builder.append("\n");
             builder.append("    ".repeat(Math.max(0, depth + 1)));
             builder.append("}");
           //  if (!isLastChild) {
-                builder.append(",");
+          //      builder.append(",");
           //  }
 
         } else {
@@ -112,16 +115,18 @@ public class JSONBuilder {
             }
 
           //  if (!isLastChild) {
-                builder.append(",");
+                builder.append("");
             //}
         }
-        builder.append("\n");
+
+        builder.append(",");
         builder.append("\n");
     }
 
     public void createContainer(String name, boolean valid,
                                 Map<String, String> attributes,
-                                int depth) {
+                                int depth, boolean isParentArray,
+                                boolean isArray) {
         boolean hasAttributes = false;
 
         builder.append("    ".repeat(Math.max(0, depth + 1)));
@@ -160,21 +165,35 @@ public class JSONBuilder {
         }
     }
 
-    public void createEnd(boolean isLastChild, int depth) {
-        builder.setLength(builder.length() - 2);
-        builder.append("\n");
+    public void createEnd(boolean isArray, int depth) {
+
+        if (builder.toString().endsWith(",\n")) {
+            builder.setLength(builder.length() - 2);
+            builder.append("\n");
+        }
+       // builder.setLength(builder.length() - 2);
+        //builder.append("\n");
         builder.append("    ".repeat(Math.max(0, depth)));
 
         if (numberOfBraces > 0) {
-            builder.append("}\n");
+            if (isArray) {
+                builder.append("],\n");
+            } else {
+                builder.append("},\n");
+            }
             numberOfBraces--;
         }
         builder.append("    ".repeat(Math.max(0, depth)));
-        builder.append("}");
+        if (isArray) {
+            builder.append("],\n");
+        } else {
+            builder.append("}");
+        }
         //System.out.println(isLastChild);
         //if (!isLastChild) {
-            builder.append(",");
+         //   builder.append(",");
         //}
+        builder.append(",");
         builder.append("\n");
     }
 

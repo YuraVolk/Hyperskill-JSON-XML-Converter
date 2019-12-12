@@ -37,12 +37,13 @@ public class XMLParser {
     }
 
     public String getContent(String element, String name) {
+
         String originalPattern = String.format("(?<=>).*(?=</%s>)", name);
         pattern = Pattern.compile(originalPattern);
         matcher = pattern.matcher(element);
 
         if (matcher.find()) {
-            return matcher.group();
+            return matcher.group().replaceAll("</.+?>", "");
         } else {
             return null;
         }

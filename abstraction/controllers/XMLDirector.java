@@ -39,6 +39,7 @@ public class XMLDirector {
         String name;
 
         for (String line : lines) {
+          //  System.out.println(line);
             if (line.matches(".+?(\\s*?\\{)")) {
                 name = parser.extractName(line);
                 jsonStructure.add(name);
@@ -106,7 +107,7 @@ public class XMLDirector {
     }
 
     private List<String> beatifyJSON(String json) {
-        Pattern pattern = Pattern.compile("(\"|null|\\d)(?=\\s*?(?:}|]))|(\\s*?,|(?:}|])(?!,))|\\[|\\{(?=\\s*?\")");
+        Pattern pattern = Pattern.compile("(\"|false|true|null|\\d)(?=\\s*?[}\\]])|(\\s*?,|[}\\]](?!,))|\\[|\\{(?=\\s*?\")");
         Matcher matcher = pattern.matcher(json);
         List<Integer> newlineChars = new ArrayList<>();
 
@@ -133,7 +134,7 @@ public class XMLDirector {
             }
         }
 
-        for (int i = 0; i < lines.size() - 1; i++) {
+        for (int i = 0; i < lines.size(); i++) {
             if (lines.get(i).matches("(?:\\s*?\".+?\"\\s*?:\\s*?\\[)|(?:\\s*?\\[)")) {
                 arrays.push("array");
                 lines.set(i, lines.get(i).replace("[", "{"));
@@ -141,7 +142,7 @@ public class XMLDirector {
 
             if (arrays.size() > 0 &&
                     lines.get(i)
-                            .matches("(?:null|true|false|\\d+(?:\\.\\d+)?|\\[|(?<!:)\\s*?\".*?\"|\\s*?\\{|(?:\\s*?[\\[{]\\s*?[\\]}]))\\s*?,?")) {
+                            .matches("(?:null|true|false|-?\\d+(?:\\.\\d+)?|\\[|(?<!:)\\s*?\".*?\"|\\s*?\\{|(?:\\s*?[\\[{]\\s*?[\\]}]))\\s*?,?")) {
                 if (!lines.get(i).matches("\".+?\"\\s*?:\\s*?.+")) {
                     String newLine = "\"element\":".concat(lines.get(i));
                     lines.set(i, newLine);
@@ -149,6 +150,7 @@ public class XMLDirector {
             }
 
             if (lines.get(i).matches("\\s*?],?")) {
+                System.out.println(lines.get(i));
                 arrays.pop();
                 lines.set(i, lines.get(i).replace("]", "}"));
             }
@@ -162,7 +164,6 @@ public class XMLDirector {
                 lines.remove(i + 1);
             }
         }
-
 
         System.out.println("***********");
         return lines;

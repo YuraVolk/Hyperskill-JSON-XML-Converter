@@ -69,7 +69,6 @@ public class JSONDirector {
     }
 
     private void parseElement(List<String> elements) {
-
        String process;
        xml = XML.root();
        for (int i = 0; i < elements.size(); i++) {
@@ -97,18 +96,20 @@ public class JSONDirector {
        List<PseudoElement> requests = XML.getRequests();
        executionStack.clear();
 
-//       requests.forEach(System.out::println);
+       requests.forEach(System.out::println);
 
        builder.start();
        for (PseudoElement request : requests) {
             if (request.isGoUp()) {
-                builder.createEnd(request.isLast(), executionStack.size());
+                builder.createEnd(request.isArray(), executionStack.size());
                 executionStack.pop();
             } else if (request.isParent()) {
                 builder.createContainer(request.getName(),
                         request.getAttributes().size() > 0,
                         request.getAttributes(),
-                        executionStack.size());
+                        executionStack.size(),
+                        request.isArrayElement(),
+                        request.isArray());
                 executionStack.push(request.getName());
             } else {
                 builder.createSingleElement(request.getName(),
@@ -124,6 +125,7 @@ public class JSONDirector {
     }
 
     private List<String> beautifyContent(String content) {
+        content = content.replaceFirst("<\\?.+?\\?>\\n?", "");
         content = content.replaceAll(">(?![@-~!-;=])", ">\n");
         String[] lines = content.split("\n");
 

@@ -9,6 +9,8 @@ public class PseudoElement {
     private String value;
     private boolean goUp = false;
     private boolean isLast = false;
+    private boolean isArray = false;
+    private boolean isArrayElement = false;
 
     public static PseudoElement goUpRequest() {
         PseudoElement element = new PseudoElement();
@@ -29,6 +31,9 @@ public class PseudoElement {
     public static PseudoElement element(String name, String value,
                                         Map<String, String> attributes) {
         PseudoElement element = new PseudoElement();
+        if (value != null) {
+            value = value.replaceAll(",", "");
+        }
         element.name = name;
         element.value = value;
         element.attributes = attributes;
@@ -66,6 +71,23 @@ public class PseudoElement {
         return goUp;
     }
 
+    public PseudoElement setArray(boolean isArray) {
+        this.isArray = isArray;
+        return this;
+    }
+
+    public PseudoElement setArrayElement(boolean isArrayElement) {
+        this.isArrayElement = isArrayElement;
+        return this;
+    }
+
+    public boolean isArray() {
+        return isArray;
+    }
+
+    public boolean isArrayElement() {
+        return isArrayElement;
+    }
 
     @Override
     public String toString() {
@@ -76,6 +98,8 @@ public class PseudoElement {
                 ", value='" + value + '\'' +
                 ", goUp=" + goUp +
                 ", isLast=" + isLast +
+                ", isArray=" + isArray +
+                ", isArrayElement=" + isArrayElement +
                 '}';
     }
 }

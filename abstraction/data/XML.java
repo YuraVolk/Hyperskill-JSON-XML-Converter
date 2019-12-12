@@ -15,6 +15,8 @@ public class XML {
     private static XML current;
     private boolean containsContainer = false;
     private static List<PseudoElement> structure = new ArrayList<>();
+    private boolean isArray = false;
+    private boolean isArrayElement = false;
 
     private XML(String elementName) {
         this.elementName = elementName;
@@ -67,15 +69,22 @@ public class XML {
             }
         }
 
+        if (children.size() != 0) {
+            String name = children.get(0).elementName;
+            isArray = children.stream().allMatch(e -> e.elementName.equals(name));
+            if (isArray) {
+                children.forEach(child -> child.isArrayElement = true);
+            }
+        }
 
         if (children.size() > 0) {
             structure.add(PseudoElement.container(elementName, attributes, containsContainer)
-                                        .setChild(isLast));
+                                        .setChild(isLast).setArray(isArray).setArrayElement(isArrayElement));
             children.forEach(XML::generate);
-            structure.add(PseudoElement.goUpRequest().setChild(isLast));
+            structure.add(PseudoElement.goUpRequest().setChild(isLast).setArray(isArray));
         } else {
             structure.add(PseudoElement.element(elementName, value, attributes)
-                                    .setChild(isLast));
+                                    .setChild(isLast).setArray(isArray).setArrayElement(isArrayElement));
         }
     }
 
