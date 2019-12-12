@@ -42,7 +42,6 @@ public class JSON {
             value = "";
         }
 
-
         current.additionHistory.add(key);
         if (value.endsWith(",")) {
             current.attributes.put(key, value.substring(value.length() - 1));

@@ -16,19 +16,21 @@ public class JSONBuilder {
 
     public Map<String, String> listOfAttributes(String attributes) {
         attributes = attributes.replaceAll("'", "\"");
-        Pattern pattern = Pattern.compile(".+?\\s*=\\s*\".+?\"");
+
+        Pattern pattern = Pattern.compile(".+?\\s*=\\s*\".*?\"");
         Matcher matcher = pattern.matcher(attributes);
 
         List<String> attrList = new ArrayList<>();
         while (matcher.find()) {
             attrList.add(matcher.group().trim());
         }
-
+      //  System.out.println(attrList);
         Map<String, String> attrMap = new LinkedHashMap<>();
         String[] attr;
 
         for (String attribute : attrList) {
             attr = attribute.split("\\s*=\\s*");
+
             attrMap.put(attr[0], attr[1]);
         }
 
@@ -61,8 +63,9 @@ public class JSONBuilder {
             builder.setLength(builder.length() - 2);
             builder.append("\n");
         }*/
+
         builder.append("    ".repeat(Math.max(0, depth + 1)));
-        System.out.println(isParentArray);
+      //  System.out.println(isParentArray);
         if (!isParentArray) {
             builder.append("\"");
             builder.append(name);
@@ -185,11 +188,12 @@ public class JSONBuilder {
             } else {
                 builder.append("\": {\n");
             }
+        } else if (!hasAttributes) {
+            //System.out.println(name);
         }
     }
 
     public void createEnd(boolean isArray, int depth, boolean isArrayElement) {
-
         if (builder.toString().endsWith(",\n")) {
             builder.setLength(builder.length() - 2);
             builder.append("\n");
@@ -206,9 +210,11 @@ public class JSONBuilder {
             builder.append("}");
         }
 
-        if (numberOfBraces > 0 && isArrayElement) {
-            builder.append("}\n");
-            numberOfBraces--;
+        if (numberOfBraces > 0) {
+            while (numberOfBraces != 0) {
+                builder.append("}\n");
+                numberOfBraces--;
+            }
         }
         //System.out.println(isLastChild);
         //if (!isLastChild) {

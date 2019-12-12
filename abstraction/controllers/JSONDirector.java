@@ -24,18 +24,8 @@ public class JSONDirector {
         Map<String, String> attributes;
 
         executionStack.push(process);
-       /*System.out.println("Element:");
-        System.out.print("path = ");
-        System.out.println(executionStack.toString()
-                .substring(1, executionStack.toString()
-                        .length() - 1));*/
 
         attributes = builder.listOfAttributes(parser.parseAttributes(line));
-
-       /* if (attributes.size() != 0) {
-            System.out.println("attributes:");
-            attributes.forEach((key, value) -> System.out.println(key + " = " + value));
-        }*/
 
         xml.addContainer(executionStack.peek(), attributes);
     }
@@ -43,32 +33,21 @@ public class JSONDirector {
     private void printElement(String line, String process) {
         Map<String, String> attributes;
 
-    //    System.out.print("Element:\npath = ");
         executionStack.push(process);
-       /* System.out.println(executionStack.toString()
-                .substring(1, executionStack.toString()
-                        .length() - 1));*/
+
 
         String content = parser.getContent(line,
                 process);
-      /*  if (content != null) {
-            System.out.println("value = \"" + content + "\"");
-        } else {
-            System.out.println("value = null");
-        }*/
 
         attributes = builder.listOfAttributes(parser.parseAttributes(line));
-       /* if (attributes.size() != 0) {
-            System.out.println("attributes:");
-            attributes.forEach((key, value) -> System.out.println(key + " = " + value));
-        }*/
 
-        //System.out.println(executionStack.peek());
+
         xml.addElement(executionStack.peek(), content, attributes);
         executionStack.pop();
     }
 
     private void parseElement(List<String> elements) {
+
        String process;
        xml = XML.root();
        for (int i = 0; i < elements.size(); i++) {
@@ -76,9 +55,6 @@ public class JSONDirector {
 
            if (parser.isParent(elements.get(i))) {
                if (process.startsWith("/")) {
-                  /* System.out.println("**************************************");
-                   System.out.println("Container end of " + executionStack.peek());
-                   System.out.println("**************************************");*/
                    xml.goUp();
                    executionStack.pop();
                    continue;
@@ -89,14 +65,15 @@ public class JSONDirector {
                 printElement(elements.get(i), process);
            }
 
-          // System.out.println(" ");
        }
+
+    //    System.out.println("yay");
 
        xml.getChildren().forEach(XML::generate);
        List<PseudoElement> requests = XML.getRequests();
        executionStack.clear();
 
-       requests.forEach(System.out::println);
+       //requests.forEach(System.out::println);
 
        builder.start();
        for (PseudoElement request : requests) {
@@ -150,6 +127,10 @@ public class JSONDirector {
             if (parser.extractName(lines[i]).equals(
                     lines[i+1].trim().substring(2, lines[i+1].trim().length() - 1))) {
                 lines[i] = lines[i].substring(0, lines[i].length() - 1);
+            }
+
+            if (!lines[i].endsWith("\n")) {
+                lines[i] = lines[i].concat("\n");
             }
         }
 

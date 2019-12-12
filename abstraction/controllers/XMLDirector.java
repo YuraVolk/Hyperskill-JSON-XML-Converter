@@ -31,7 +31,7 @@ public class XMLDirector {
     }
 
     private void parseElement(List<String> lines) {
-        lines.forEach(System.out::println);
+       // lines.forEach(System.out::println);
         /*if (Math.random() != 2.00) {
             throw new StackOverflowError();
         }*/
@@ -77,7 +77,7 @@ public class XMLDirector {
         jsonStructure.clear();
         builder = new XMLBuilder(false);
 
-        requests.forEach(System.out::println);
+//        requests.forEach(System.out::println);
 
         for (PseudoElement request : requests) {
             if (request.isGoUp()) {
@@ -150,7 +150,7 @@ public class XMLDirector {
             }
 
             if (lines.get(i).matches("\\s*?],?")) {
-                System.out.println(lines.get(i));
+                //System.out.println(lines.get(i));
                 arrays.pop();
                 lines.set(i, lines.get(i).replace("]", "}"));
             }
@@ -165,7 +165,7 @@ public class XMLDirector {
             }
         }
 
-        System.out.println("***********");
+
         return lines;
     }
 

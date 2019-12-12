@@ -23,7 +23,6 @@ public class XML {
     }
 
     public void addContainer(String name, Map<String, String> attributes) {
-     //   System.out.println("Request to add " + name  + " " + attributes);
         current.containsContainer = true;
         current.children.add(new XML(name));
         current.children.get(current.children.size() - 1).parent = current;
@@ -33,7 +32,7 @@ public class XML {
 
     public void addElement(String name, String value,
                                   Map<String, String> attributes) {
-      //  System.out.println("Request to add " + name + " " + value + " " + attributes);
+
         current.children.add(new XML(name));
         current.children.get(current.children.size() - 1).parent = current;
         current = current.children.get(current.children.size() - 1);
@@ -69,7 +68,7 @@ public class XML {
             }
         }
 
-        if (children.size() != 0) {
+        if (children.size() > 1) {
             String name = children.get(0).elementName;
             isArray = children.stream().allMatch(e -> e.elementName.equals(name));
             if (isArray) {
